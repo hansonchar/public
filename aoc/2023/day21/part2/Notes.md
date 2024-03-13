@@ -56,7 +56,7 @@ T_1 &= b_1 + b_2 + 14895 = 33680 \\
 b_2 &= 15001 \\
 \end{align*}$$
 
-$$\therefore \boxed{T_k = 14895k^2 + 15001k + 33680}$$
+$$\therefore \boxed{T_k = 14895k^2 + 15001k + 3784}$$
 
 # [SageMath](https://www.sagemath.org/)
 
