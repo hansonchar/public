@@ -1,0 +1,39 @@
+% Draw a character "E":
+%
+%   3------4
+%   |
+%   |
+%   2---5
+%   |
+%   |
+%   1------6
+%
+% Golden ratio
+Phi=(1+sqrt5)/2;
+% Width in pixel by default
+w=100;
+% Height
+h=Phi*w;
+
+% Bottom line
+y1=y6=0;
+% Top line
+y3=y4=h;
+% Middle line
+y2=y5;
+% Vertical stroke
+x1=x2=x3=0;
+
+% Make the middle horizontal stroke relatively shorter.
+Phi*x5=x6=x4=w;
+
+% Make the ratio of the areas above and below the middle horizontal a golden ratio.
+(y3-y2)=(y2-y1)*Phi;
+
+draw z1..z6;
+draw z2..z5;
+draw z3..z4;
+draw z1..z3;
+
+labels(range 1 thru 6);
+showit; shipit; end;

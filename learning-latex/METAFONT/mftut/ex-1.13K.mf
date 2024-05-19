@@ -1,0 +1,46 @@
+% Exercise 1.13K - Create a capital "K" such that
+% 1. The ratio of its height by its width is equal to the golden number.
+% 2. The middle point is at the same height as that of the E character in 1.10-SimpleE.mf.
+% 3. The south east stroke meets the north east stroke that splits the north east stroke by
+%    some power of the golden ratio.
+%
+% 3|  /5
+%  | /
+% 2|/\4
+%  |  \
+% 1|   \6
+%
+% Golden ratio
+Phi=(1+sqrt5)/2;
+% Width in pixel by default
+w=100;
+% Set the height to satisfy the first requirement.
+h=Phi*w;
+
+% Anchor the bottom.
+% Use an arbitrary location other than (0,0) to show that this works without
+% an implicit assumption about the origin.
+z1=(3, 7);
+
+% Anchor the top right.
+z5=(x1+w, h);
+% Anchor the top left.
+z3=(x1, h);
+% Anchor the bottom right.
+z6=(x1+w, y1);
+
+% Set the height of the middle point to satisfy the second requirement.
+(y3-y2)=(y2-y1)*Phi;
+x2=x1;
+
+% Set the position of z4 so it would divide the north east stroke by
+% a square of the golden ratio.
+(z4-z2)*(Phi**2)=(z5-z4);
+z4=whatever[z2,z5];
+
+draw z1..z3;
+draw z2..z5;
+draw z4..z6;
+
+labels(range 1 thru 6);
+showit; shipit; end;
