@@ -1,7 +1,32 @@
 local BinaryHeap = require "algo.BinaryHeap"
 
 local h = BinaryHeap:new()
-h:add('9'):add('8'):add('7'):add('6'):add('5')
+
+local nine = h:add('9')
+assert(nine.pos == 1 and nine.val == '9')
+
+local eight = h:add('8')
+assert(eight.pos == 1 and eight.val == '8')
+assert(nine.pos == 2 and nine.val == '9')
+
+local seven = h:add('7')
+assert(seven.pos == 1 and seven.val == '7')
+assert(nine.pos == 2 and nine.val == '9')
+assert(eight.pos == 3 and eight.val == '8')
+
+local six = h:add('6')
+assert(six.pos == 1 and six.val == '6')
+assert(seven.pos == 2 and seven.val == '7')
+assert(eight.pos == 3 and eight.val == '8')
+assert(nine.pos == 4 and nine.val == '9')
+
+local five = h:add('5')
+assert(five.pos == 1 and five.val == '5')
+assert(six.pos == 2 and six.val == '6')
+assert(eight.pos ==3 and eight.val == '8')
+assert(nine.pos == 4 and nine.val == '9')
+assert(seven.pos == 5 and seven.val == '7')
+
 h:verify()
 assert(h:dump() == "5,6,8,9,7")
 assert(h:size() == 5)
@@ -69,7 +94,31 @@ h:verify()
 assert(h:dump() == "9,8,7,5,4,6,3,1,2")
 
 local h = BinaryHeap:newMaxHeap()
-h:add('9'):add('8'):add('7'):add('6'):add('5')
+local nine = h:add('9')
+assert(nine.pos == 1 and nine.val == '9')
+
+local eight = h:add('8')
+assert(nine.pos == 1 and nine.val == '9')
+assert(eight.pos == 2 and eight.val == '8')
+
+local seven = h:add('7')
+assert(nine.pos == 1 and nine.val == '9')
+assert(eight.pos == 2 and eight.val == '8')
+assert(seven.pos == 3 and seven.val == '7')
+
+local six = h:add('6')
+assert(nine.pos == 1 and nine.val == '9')
+assert(eight.pos == 2 and eight.val == '8')
+assert(seven.pos == 3 and seven.val == '7')
+assert(six.pos == 4 and six.val == '6')
+
+local five = h:add('5')
+assert(nine.pos == 1 and nine.val == '9')
+assert(eight.pos == 2 and eight.val == '8')
+assert(seven.pos == 3 and seven.val == '7')
+assert(six.pos == 4 and six.val == '6')
+assert(five.pos == 5 and five.val == '5')
+
 h:verify()
 assert(h:dump() == "9,8,7,6,5", h:dump())
 assert(h:size() == 5)

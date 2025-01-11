@@ -66,30 +66,17 @@ end
 --- Append the given value to the internal array, and then maintain the heap invariant by
 --- repeatedly swapping with the parent if necessary.
 ---@param x any the value to be added to the heap
+---@return (table) a reference to the entry added
 function BinaryHeap:add(x)
   local a = self
   local pos = #a + 1
-  a[pos] = {
+  local entry = {
     pos = pos,
     val = x
   }
+  a[pos] = entry
   a:bubble_up()
-  return a
-end
-
-function BinaryHeap:class(t, comp)
-  t = t or {}
-  local mt = { -- used to store the heap instance specific comparision function
-    comp = comp or function(a, b) -- default to min heap
-      return a <= b
-    end
-  }
-  setmetatable(mt, self)
-  self.__index = self
-
-  setmetatable(t, mt)
-  mt.__index = mt
-  return t
+  return entry
 end
 
 --- Build a heap from the given array.
@@ -107,6 +94,21 @@ function BinaryHeap:heapify()
     parent = left >> 1
   end
   return a
+end
+
+function BinaryHeap:class(t, comp)
+  t = t or {}
+  local mt = { -- used to store the heap instance specific comparision function
+    comp = comp or function(a, b) -- default to min heap
+      return a <= b
+    end
+  }
+  setmetatable(mt, self)
+  self.__index = self
+
+  setmetatable(t, mt)
+  mt.__index = mt
+  return t
 end
 
 function BinaryHeap:new(a, comp)
