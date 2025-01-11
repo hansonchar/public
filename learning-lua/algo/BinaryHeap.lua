@@ -2,6 +2,12 @@
 -- Courtesy of https://en.wikipedia.org/wiki/J._W._J._Williams
 local BinaryHeap = {}
 
+function BinaryHeap:swap(i, j)
+  local a = self
+  a[i], a[j] = a[j], a[i]
+  a[i].pos, a[j].pos = i, j
+end
+
 --- Maintain the heap invariant by repeatedly swapping with the parent if necessary.
 ---@param i (number) the starting position; default to the last element.
 function BinaryHeap:bubble_up(i)
@@ -9,10 +15,10 @@ function BinaryHeap:bubble_up(i)
   local a, comp = self, self.comp
   while i > 1 do
     local p = i >> 1 -- parent
-    if comp(a[p], a[i]) then -- value stored at index i is not smaller than that of its parent
+    if comp(a[p].val, a[i].val) then -- value stored at index i is not smaller than that of its parent
       return
     end
-    a[i], a[p] = a[p], a[i] -- swap value with parent
+    a:swap(i, p) -- swap with parent
     i = p -- repeatedly
   end
 end
@@ -26,11 +32,11 @@ function BinaryHeap:trickle_down(i)
   while left <= #a do
     local right = left + 1
     local right = right <= #a and right or left -- 'right' is out of bound
-    local child = comp(a[left], a[right]) and left or right
-    if comp(a[i], a[child]) then
+    local child = comp(a[left].val, a[right].val) and left or right
+    if comp(a[i].val, a[child].val) then
       return
     end
-    a[i], a[child] = a[child], a[i]
+    a:swap(i, child)
     i = child
     left = i << 1
   end
@@ -38,16 +44,23 @@ end
 
 --- Move the last element to the root, and then maintain the heap invariant as necessary by repeatedly
 --- swapping with the smallest/largest of the two children.
-function BinaryHeap:remove()
+function BinaryHeap:remove(i)
+  i = i and i or 1
   local a = self
-  local root = a[1]
-  if #a == 1 then
-    a[1] = nil
+  assert(i <= #a, "index out of bound")
+  local root = a[i]
+  if #a == i then
+    a[i] = nil
   else
-    a[1], a[#a] = a[#a], nil
-    a:trickle_down()
+    a[i], a[#a] = a[#a], nil
+    a[i].pos = i
+    a:trickle_down(i)
   end
-  return root
+  return root.val
+end
+
+function BinaryHeap:top()
+  return self[1].val
 end
 
 --- Append the given value to the internal array, and then maintain the heap invariant by
@@ -55,7 +68,11 @@ end
 ---@param x any the value to be added to the heap
 function BinaryHeap:add(x)
   local a = self
-  a[#a + 1] = x
+  local pos = #a + 1
+  a[pos] = {
+    pos = pos,
+    val = x
+  }
   a:bubble_up()
   return a
 end
@@ -94,6 +111,12 @@ end
 
 function BinaryHeap:new(a, comp)
   a = a or {}
+  for i, val in ipairs(a) do
+    a[i] = {
+      pos = i,
+      val = a[i]
+    }
+  end
   return self:class(a, comp):heapify()
 end
 
@@ -107,21 +130,37 @@ function BinaryHeap:size()
   return #self
 end
 
+function BinaryHeap:empty()
+  return #self == 0
+end
+
 function BinaryHeap:dump() -- debugging
-  return table.concat(self, ",")
+  local a = {}
+  for i, ele in ipairs(self) do
+    a[i] = ele.val
+    assert(ele.pos == i)
+  end
+  return table.concat(a, ",")
 end
 
 function BinaryHeap:verify() -- debugging: verify the heap invariant holds
   local a, comp = self, self.comp
   for i = 1, #a do
+    assert(a[i].pos == i)
     local left = i << 1
     if left > #a then
       return
     end
+    assert(a[left].pos == left)
     local right = left + 1
     right = right > #a and left or right
-    local child = comp(a[left], a[right]) and left or right
-    assert(comp(a[i], a[child]))
+    assert(a[right].pos == right)
+    local child = comp(a[left].val, a[right].val) and left or right
+    assert(comp(a[i].val, a[child].val))
   end
 end
 return BinaryHeap
+
+-- Interesting:
+-- https://github.com/TheAlgorithms/Lua/blob/main/src/data_structures/heap.lua
+-- https://web.archive.org/web/20240102194253/http://lua-users.org/wiki/ObjectOrientationTutorial
