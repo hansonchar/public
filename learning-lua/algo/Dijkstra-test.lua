@@ -43,7 +43,13 @@ local function tim_test()
 
   local G = load_input(input)
   local d = Dijkstra:new(G, source)
-  local sssp = d:shortest_paths()
+
+  local sssp = d:shortest_paths('w') -- shortest path to 'w' only
+  assert(sssp:shortest_path_of('w') == 's-v-w')
+  assert(sssp:min_cost('w') == 3)
+
+  local d = Dijkstra:new(G, source)
+  local sssp = d:shortest_paths() -- shortest path to all vertices
   sssp:dump()
 
   assert(sssp:shortest_path_of('s') == 's')
@@ -68,7 +74,13 @@ local function geek_test()
   local source<const> = '0'
   local G = load_input(input)
   local d = Dijkstra:new(G, source)
-  local sssp = d:shortest_paths()
+
+  local sssp = d:shortest_paths('3') -- interested only in the shortest path to '3'
+  assert(sssp:shortest_path_of('3') == '0-1-2-3')
+  assert(sssp:min_cost('3') == 19)
+
+  local d = Dijkstra:new(G, source)
+  local sssp = d:shortest_paths() -- all shortest paths
   sssp:dump()
 
   assert(sssp:shortest_path_of('0') == '0')

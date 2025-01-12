@@ -3,7 +3,8 @@ local Graph = require "algo.Graph"
 local Dijkstra = {}
 local E = {}
 
-function Dijkstra:shortest_paths()
+---@param Q (string) optional destination vertex for finding a single shortest path; nil for all shortest paths.
+function Dijkstra:shortest_paths(Q)
   local G, s, sssp = self.graph, self.starting_vertex, self.sssp
   local heap = BinaryHeap:new({}, function(a, b)
     return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
@@ -11,6 +12,9 @@ function Dijkstra:shortest_paths()
   local u = s
   repeat
     sssp.vertices[u].ref = nil -- nullify u's heap reference as u is no longer on the heap
+    if u == Q then
+      break -- if we are only interested in the shortest path to Q
+    end
     local edges = G:edges(u)
     if edges then
       for v, weight in edges:outgoings() do
