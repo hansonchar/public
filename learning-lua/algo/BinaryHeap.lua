@@ -46,9 +46,15 @@ end
 --- Move the last element to the root, and then maintain the heap invariant as necessary by repeatedly
 --- swapping with the smallest/largest of the two children.
 function BinaryHeap:remove(i)
-  i = i and i or 1
+  if not i then
+    if self:empty() then
+      return
+    else
+      i = 1
+    end
+  end
   local a = self
-  assert(i <= #a, "index out of bound")
+  assert(0 < i and i <= #a, "index out of bound")
   local root = a[i]
   if #a == i then
     a[i] = nil
