@@ -2,15 +2,15 @@
 -- Courtesy of https://en.wikipedia.org/wiki/J._W._J._Williams
 local BinaryHeap = {}
 
-function BinaryHeap:swap(i, j)
-  local a = self
+local function swap(a, i, j)
   a[i], a[j] = a[j], a[i]
   a[i].pos, a[j].pos = i, j
 end
 
 --- Maintain the heap invariant by repeatedly swapping with the parent if necessary.
+---@param self (table) the binary heap
 ---@param i (number) the starting position; default to the last element.
-function BinaryHeap:bubble_up(i)
+local function bubble_up(self, i)
   i = i or #self
   local a, comp = self, self.comp
   while i > 1 do
@@ -18,15 +18,16 @@ function BinaryHeap:bubble_up(i)
     if comp(a[p].val, a[i].val) then -- value stored at index i is not smaller than that of its parent
       return
     end
-    a:swap(i, p) -- swap with parent
+    swap(a, i, p) -- swap with parent
     i = p -- repeatedly
   end
 end
 
 --- Maintain the heap invariant as necessary by repeatedly
 --- swapping with the smallest/largest of the two children.
+---@param self (table) the binary heap
 ---@param i (number) the starting position; default to the root.
-function BinaryHeap:trickle_down(i)
+local function trickle_down(self, i)
   i = i or 1
   local left, a, comp = i << 1, self, self.comp
   while left <= #a do
@@ -36,7 +37,7 @@ function BinaryHeap:trickle_down(i)
     if comp(a[i].val, a[child].val) then
       return
     end
-    a:swap(i, child)
+    swap(a, i, child)
     i = child
     left = i << 1
   end
@@ -54,7 +55,7 @@ function BinaryHeap:remove(i)
   else
     a[i], a[#a] = a[#a], nil
     a[i].pos = i
-    a:trickle_down(i)
+    trickle_down(a, i)
   end
   return root.val
 end
@@ -75,7 +76,7 @@ function BinaryHeap:add(x)
     val = x
   }
   a[pos] = entry
-  a:bubble_up()
+  bubble_up(a)
   return entry
 end
 
@@ -83,13 +84,13 @@ end
 --- Starting from the lowest level and moving upwards, sift the root of each subtree downward
 --- as in the deletion algorithm until the heap property is restored.
 --- Courtesy of https://en.wikipedia.org/wiki/Robert_W._Floyd
----@param a (table) an array of elements in arbitrary order
-function BinaryHeap:heapify()
+---@param self (table) the binary heap but with an array of elements in arbitrary order
+local function heapify(self)
   local a = self
   local parent = #a >> 1
   local left = parent << 1
   while parent > 0 do
-    a:trickle_down(parent)
+    trickle_down(a, parent)
     left = left - 2
     parent = left >> 1
   end
@@ -119,7 +120,7 @@ function BinaryHeap:new(a, comp)
       val = a[i]
     }
   end
-  return self:class(a, comp):heapify()
+  return heapify(self:class(a, comp))
 end
 
 function BinaryHeap:newMaxHeap(a) -- a convenient method to build a max heap
