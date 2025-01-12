@@ -14,6 +14,7 @@ function Dijkstra:shortest_paths()
     local edges = G:edges(u)
     if edges then
       for v, weight in edges:outgoings() do
+        assert(weight >= 0, "Weight must not be negative")
         local v_info, v_cost_so_far = sssp.vertices[v], sssp.vertices[u].min_cost + weight
         if v_cost_so_far < v_info.min_cost then
           v_info.min_cost = v_cost_so_far
@@ -85,7 +86,7 @@ function Dijkstra:new(G, s)
   assert(G, "Missing Graph")
   assert(Graph.isGraph(G), "G must be a graph object")
   assert(s, "Missing starting vertex")
-  assert(G:edges(s), "Starting vertex not found in graph")
+  assert(G:edges(s), "Starting vertex with at least one outgoing edge not found in graph")
   return self:class{
     graph = G,
     starting_vertex = s,

@@ -102,4 +102,11 @@ end
 tim_test()
 geek_test()
 
+local G = Graph:new()
+G:add('s', 'v', -1)
+local d = Dijkstra:new(G, 's')
+local ok, errmsg = pcall(d.shortest_paths, d)
+assert(not ok)
+assert(string.match(errmsg, "Weight must not be negative$"))
+
 os.exit()

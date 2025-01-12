@@ -23,7 +23,7 @@ function Graph:add(u, v, weight)
   self[u].egress = self[u].egress or {}
   local egress = self[u].egress
   assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
-  egress[v] = weight
+  egress[v] = tonumber(weight)
 end
 
 function Graph:vertices()
