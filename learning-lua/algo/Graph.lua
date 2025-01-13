@@ -1,4 +1,5 @@
 local Graph = {} -- Example:
+local E = {}
 -- local Graph = {
 --   s = { egress = { ['v'] = 1, ['w'] = 4 }},
 --   v = { egress = { ['t'] = 6, ['w'] = 2 }},
@@ -7,23 +8,27 @@ local Graph = {} -- Example:
 
 local mt_vertex = {}
 function mt_vertex:outgoings()
-  return pairs(self.egress)
+  return pairs(self.egress and self.egress or E)
 end
 mt_vertex.__index = mt_vertex
 
---- Adds a weighted directional edge from u to v.
+--- Adds a vertex u and optionally a weighted directional edge from u to v.
 ---@param u (string) vertex from
----@param v (string) vertex to
+---@param v (string) vertex to (optional)
 ---@param weight (number) weight of u-v
 function Graph:add(u, v, weight)
   if not self[u] then
-    self[u] = {}
-    setmetatable(self[u], mt_vertex)
+    self[u] = setmetatable({}, mt_vertex)
   end
   self[u].egress = self[u].egress or {}
   local egress = self[u].egress
-  assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
-  egress[v] = tonumber(weight)
+  if v then
+    assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
+    egress[v] = tonumber(weight)
+    if not self[v] then -- add v as a vertex
+      self[v] = setmetatable({}, mt_vertex)
+    end
+  end
 end
 
 function Graph:vertices()
@@ -37,23 +42,34 @@ end
 
 ---@param u (string)
 ---@param vertex_u (table)
-local function print_outgoings(u, vertex_u)
+---@param tostring_f (function) apply this function to u for display purposes
+---@return (number) the number of edges printed
+local function print_outgoings(u, vertex_u, tostring_f)
+  local u_str = tostring_f and tostring_f(u) or u
+  local count = 0
   for v, weight in vertex_u:outgoings() do
-    print(string.format("%s->%s:%d", u, v, weight))
+    local v_str = tostring_f and tostring_f(v) or v
+    print(string.format("%s->%s:%d", u_str, v_str, weight))
+    count = count + 1
   end
+  return count
 end
 
 ---@param u (string) vertex
-function Graph:dump(u)
+---@param tostring_f (function) apply this function to u for display purposes
+---@return (number) the number of edges dumped
+function Graph:dump(u, tostring_f)
+  local count = 0
   if u then
     if self[u] then
-      print_outgoings(u, self[u])
+      count = count + print_outgoings(u, self[u], tostring_f)
     end
   else
     for u, vertex_u in self:vertices() do
-      print_outgoings(u, vertex_u)
+      count = count + print_outgoings(u, vertex_u, tostring_f)
     end
   end
+  return count
 end
 
 function Graph.isGraph(o)
