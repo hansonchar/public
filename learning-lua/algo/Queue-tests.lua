@@ -1,0 +1,17 @@
+local Queue = require "algo.Queue"
+
+local q = Queue:new()
+q:enqueue('a','b',1, 2)
+assert(tostring(q) == "a,b,1,2")
+assert(q:size() == 4)
+assert(q:dequeue() == 'a')
+assert(q:size() == 3)
+q:enqueue('c')
+assert(tostring(q) == "b,1,2,c")
+q:clear()
+assert(q:empty())
+assert(not q:dequeue())
+q:enqueue('x')
+assert(not q:empty())
+assert(q:dequeue() == 'x')
+assert(q:empty())
