@@ -16,7 +16,7 @@ local function _iterate(bfs)
     end
     local item = (q:dequeue() or E)
     from, level = item[1], item[3]
-  until not from or from == bfs.src_vertex
+  until not from -- note a cyclical path would lead to infinite iteration
 end
 
 function BFS:iterate()
