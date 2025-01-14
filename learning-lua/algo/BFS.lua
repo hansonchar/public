@@ -26,8 +26,8 @@ function BFS:iterate()
 end
 
 function BFS:class(o)
-  setmetatable(o, BFS)
-  BFS.__index = BFS
+  setmetatable(o, self)
+  self.__index = self
   return o
 end
 

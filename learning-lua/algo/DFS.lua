@@ -41,8 +41,8 @@ function DFS:iterate()
 end
 
 function DFS:class(o)
-  setmetatable(o, DFS)
-  DFS.__index = DFS
+  setmetatable(o, self)
+  self.__index = self
   return o
 end
 
