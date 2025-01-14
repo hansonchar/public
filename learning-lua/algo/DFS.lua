@@ -1,62 +1,28 @@
+local GraphSearch = require "algo.GraphSearch"
 local Graph = require "algo.Graph"
-local BinaryHeap = require "algo.BinaryHeap"
-local DFS = {}
+local Stack = require "algo.Stack"
+local DFS = GraphSearch:class()
 local E = {}
 
-local function yield(item)
-  if item then
-    local to, weight, depth, from, order = table.unpack(item)
-    coroutine.yield(from, to, weight, depth)
-    return item
-  else
-    return E
-  end
-end
-
-local function _iterate(dfs)
-  local heap = BinaryHeap:new({}, function(a, b)
-    local depth_a, depth_b = a[3], b[3]
-    local order_a, order_b = a[5], b[5]
-    return depth_a > depth_b or depth_a == depth_b and order_a < order_b
-  end)
+local function _iterate(self)
+  local stack = Stack:new()
   local depth = 0
-  local order -- ordering within the same depth
-  local from = dfs.src_vertex
+  local from = self.src_vertex
   repeat
-    local vertex = dfs.graph:vertex(from)
-    depth, order = depth + 1, 0
+    local vertex = self.graph:vertex(from)
+    depth = depth + 1
     for to, weight in vertex:outgoings() do
-      order = order + 1
-      heap:add{to, weight, depth, from, order}
+      stack:push{to, weight, depth, from}
     end
-    local item = yield(heap:remove())
+    local item = self._yield(stack:pop())
     from, depth = item[1], item[3]
   until not from -- note a cyclical path would lead to infinite iteration
-end
-
-function DFS:iterate()
-  return coroutine.wrap(function()
-    _iterate(self)
-  end)
-end
-
-function DFS:class(o)
-  setmetatable(o, self)
-  self.__index = self
-  return o
 end
 
 ---@param G (table) graph
 ---@param src (any) source vertex
 function DFS:new(G, src)
-  assert(G, "Missing Graph")
-  assert(Graph.isGraph(G), "G must be a graph object")
-  assert(src, "Missing source vertex")
-  assert(G:vertex(src), "Source vertex not found in graph")
-  return DFS:class{
-    graph = G,
-    src_vertex = src
-  }
+  return getmetatable(self):new(G, src, _iterate)
 end
 
 return DFS
