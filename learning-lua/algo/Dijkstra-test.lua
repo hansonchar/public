@@ -180,11 +180,49 @@ local function negative_tests()
   assert(string.match(errmsg, "Weight must not be negative$"))
 end
 
+-- CE 191 - CEE Systems Analysis by Processor Scott Moura, University of California, Berkeley
+local function scott_moura_test()
+  print("scott_moura_test...")
+  local input<const> = {'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
+                        'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2'}
+  local source<const> = 'A'
+
+  local G = load_input(input)
+  local d = Dijkstra:new(G, source)
+  local sssp = d:shortest_paths() -- shortest path to all vertices
+  sssp:dump()
+
+  assert(sssp:shortest_path_of('A') == 'A')
+  assert(sssp:min_cost(source) == 0)
+
+  assert(sssp:shortest_path_of('B') == 'A-B')
+  assert(sssp:min_cost('B') == 2)
+
+  assert(sssp:shortest_path_of('C') == 'A-C')
+  assert(sssp:min_cost('C') == 4)
+
+  assert(sssp:shortest_path_of('D') == 'A-D')
+  assert(sssp:min_cost('D') == 4)
+
+  assert(sssp:shortest_path_of('E') == 'A-D-E')
+  assert(sssp:min_cost('E') == 9)
+
+  assert(sssp:shortest_path_of('F') == 'A-B-F')
+  assert(sssp:min_cost('F') == 8)
+
+  assert(sssp:shortest_path_of('G') == 'A-B-F-G')
+  assert(sssp:min_cost('G') == 10)
+
+  assert(sssp:shortest_path_of('H') == 'A-B-F-G-H')
+  assert(sssp:min_cost('H') == 12)
+end
+
 basic_tests()
 negative_tests()
 tim_test()
 geek_test()
 redblobgames_test()
 algodaily_test()
+scott_moura_test()
 
 os.exit()

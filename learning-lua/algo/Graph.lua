@@ -10,6 +10,9 @@ local mt_vertex = {}
 function mt_vertex:outgoings()
   return pairs(self.egress and self.egress or E)
 end
+function mt_vertex:incomings()
+  return pairs(self.ingress and self.ingress or E)
+end
 mt_vertex.__index = mt_vertex
 
 --- Adds a vertex u and optionally a weighted directional edge from u to v.
@@ -31,45 +34,82 @@ function Graph:add(u, v, weight)
   end
 end
 
+function Graph:build_ingress()
+  for u, u_node in pairs(self) do
+    for v, weight in pairs(u_node.egress or E) do
+      local v_node = self[v]
+      v_node.ingress = v_node.ingress or {}
+      v_node.ingress[u] = weight
+    end
+  end
+end
+
 function Graph:vertices()
   return pairs(self)
 end
 
 ---@param v (string)
-function Graph:edges(v)
+function Graph:vertex(v)
   return self[v]
 end
 
 ---@param u (string)
 ---@param vertex_u (table)
 ---@param tostring_f (function) apply this function to u for display purposes
----@return (number) the number of edges printed
-local function print_outgoings(u, vertex_u, tostring_f)
+---@return (table) an array of all the outgoing edges of u for debugging purposes
+local function outgoing_str_of(u, vertex_u, tostring_f)
+  local a = {}
   local u_str = tostring_f and tostring_f(u) or u
-  local count = 0
   for v, weight in vertex_u:outgoings() do
     local v_str = tostring_f and tostring_f(v) or v
-    print(string.format("%s->%s:%d", u_str, v_str, weight))
-    count = count + 1
+    a[#a + 1] = string.format("%s->%s:%d", u_str, v_str, weight)
   end
-  return count
+  return a
 end
 
----@param u (string) vertex
+---@param u (string) vertex u or nil for all vertices
 ---@param tostring_f (function) apply this function to u for display purposes
----@return (number) the number of edges dumped
-function Graph:dump(u, tostring_f)
-  local count = 0
+---@return (string), (number) a string of all the outgoing edges (of either vertex u if specified or of all vertices otherwise) for debugging purposes, and a count of the edges.
+function Graph:outgoing_str(u, tostring_f)
+  local a = {}
   if u then
     if self[u] then
-      count = count + print_outgoings(u, self[u], tostring_f)
+      local from = outgoing_str_of(u, self[u], tostring_f)
+      table.move(from, 1, #from, #a + 1, a)
     end
   else
     for u, vertex_u in self:vertices() do
-      count = count + print_outgoings(u, vertex_u, tostring_f)
+      local from = outgoing_str_of(u, vertex_u, tostring_f)
+      table.move(from, 1, #from, #a + 1, a)
     end
   end
-  return count
+  return table.concat(a, ","), #a
+end
+
+local function incoming_str_of(v, vertex_v, tostring_f)
+  local a = {}
+  local v_str = tostring_f and tostring_f(v) or v
+  for u, weight in vertex_v:incomings() do
+    local u_str = tostring_f and tostring_f(u) or u
+    a[#a + 1] = string.format("%s->%s:%d", u_str, v_str, weight)
+  end
+  return a
+end
+
+function Graph:incoming_str(v, tostring_f)
+  local a = {}
+  if v then
+    if self[v] then
+      local from = incoming_str_of(v, self[v], tostring_f)
+      table.move(from, 1, #from, #a + 1, a)
+    end
+  else
+    for v, vertex_v in self:vertices() do
+      local from = incoming_str_of(v, vertex_v, tostring_f)
+      table.move(from, 1, #from, #a + 1, a)
+    end
+  end
+  return table.concat(a, ","), #a
 end
 
 function Graph.isGraph(o)
