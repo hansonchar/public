@@ -3,17 +3,17 @@ local Graph = require "algo.Graph"
 local Dijkstra = {}
 local E = {}
 
----@param Q (string) optional destination vertex for finding a single shortest path; nil for all shortest paths.
-function Dijkstra:shortest_paths(Q)
-  local G, s, sssp = self.graph, self.starting_vertex, self.sssp
+---@param dst (any) optional destination vertex for finding a single shortest path; nil for all shortest paths.
+function Dijkstra:shortest_paths(dst)
+  local G, s, sssp = self.graph, self.src_vertex, self.sssp
   local heap = BinaryHeap:new({}, function(a, b)
     return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
   end)
   local u = s
   repeat
     sssp.vertices[u].ref = nil -- nullify u's heap reference as u is no longer on the heap
-    if u == Q then
-      break -- if we are only interested in the shortest path to Q
+    if u == dst then
+      break -- if we are only interested in the shortest path to dst
     end
     local vertex = G:vertex(u)
     if vertex then
@@ -36,15 +36,14 @@ function Dijkstra:shortest_paths(Q)
   return sssp
 end
 
-local function shortest_path_of(sssp, vertex)
-  local path = {assert(vertex)}
-  local from = sssp.vertices[vertex].from
-  while from and from ~= vertex do
+local function shortest_path_of(sssp, dst)
+  local path = {assert(dst)}
+  local from = sssp.vertices[dst].from
+  while from and from ~= dst do
     path[#path + 1] = from
-    vertex = from
-    from = sssp.vertices[vertex].from
+    dst = from
+    from = sssp.vertices[dst].from
   end
-  path[#path + 1] = source
   return table.concat(path, "-"):reverse()
 end
 
@@ -85,16 +84,16 @@ function Dijkstra:class(o)
 end
 
 ---@param G (table) graph
----@param s (string) starting vertex
-function Dijkstra:new(G, s)
+---@param src (any) source vertex
+function Dijkstra:new(G, src)
   assert(G, "Missing Graph")
   assert(Graph.isGraph(G), "G must be a graph object")
-  assert(s, "Missing starting vertex")
-  assert(G:vertex(s), "Starting vertex with at least one outgoing edge not found in graph")
+  assert(src, "Missing source vertex")
+  assert(G:vertex(src), "Source vertex not found in graph")
   return self:class{
     graph = G,
-    starting_vertex = s,
-    sssp = new_sssp(s)
+    src_vertex = src,
+    sssp = new_sssp(src)
   }
 end
 
