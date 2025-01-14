@@ -1,0 +1,17 @@
+local Stack = require "algo.Stack"
+
+local stack = Stack:new()
+stack:push('a','b',1, 2)
+assert(tostring(stack) == "a,b,1,2")
+assert(stack:size() == 4)
+assert(stack:pop() == 2)
+assert(stack:size() == 3)
+stack:push('c')
+assert(tostring(stack) == "a,b,1,c")
+stack:clear()
+assert(stack:empty())
+assert(not stack:pop())
+stack:push('x')
+assert(not stack:empty())
+assert(stack:pop() == 'x')
+assert(stack:empty())
