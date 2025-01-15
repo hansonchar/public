@@ -78,6 +78,17 @@ local function new_sssp(s)
   return sssp
 end
 
+--- ShortestPathSearch.lua enables graph traveral using an iterator
+--- (while following the Dijkstra’s graph search strategy).
+--- Notes:
+--- * Dijkstra’s algorithm is simply one type of graph search strategy,
+---   like BFS or DFS.
+--- * Once nice property is that if a user is interested only in a specific destination node,
+---   [s]he can just cut short iterating upon reaching that node! The min cost would be
+---   returned in a silver plater; or so to speak. In other words, the iterator iterates
+---   nodes with monotonic non-decreasing
+---   shortest possible distances from the source node, in an incremental manner.
+--- * No full computation on the entire graph necessary a priori.
 ---@param G (table) graph
 ---@param src (any) source vertex
 function ShortestPathSearch:new(G, src)
