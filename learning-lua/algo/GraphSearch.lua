@@ -5,7 +5,7 @@ local E = {}
 local function _yield(item)
   if item then
     local to, weight, depth, from = table.unpack(item)
-    coroutine.yield(from, to, weight, depth)
+    coroutine.yield(from, to, weight, depth, table.unpack(item, 5))
     return item
   else
     return E
