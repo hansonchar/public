@@ -24,6 +24,20 @@ function Grid:coord(node)
   return node >> self._intern.wbits, node & self._intern.wmask
 end
 
+function Grid.isGrid(o)
+  local mt
+  while true do
+    mt = getmetatable(o)
+    if mt == Grid then
+      return true
+    elseif not mt or mt == o then
+      return false
+    else
+      o = mt -- check parent metatable
+    end
+  end
+end
+
 function Grid:new(width, height)
   assert(width > 0 and height > 0)
   local g = {
