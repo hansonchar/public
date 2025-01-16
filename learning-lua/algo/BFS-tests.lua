@@ -45,10 +45,8 @@ local function scott_moura_test()
   assert(level_counts[5] == 3)
 end
 
-local function bfs_topo_sort()
+local function bfs_topo_sort(input, src)
   print("BFS topo sort ... ")
-  local input<const> = {'A-B=1', 'B-C=1', 'C-E=1', 'A-D=1', 'D-E=1'}
-  local src<const> = 'A'
   local node_depth = { -- maximum depth of each node
     [src] = 0
   }
@@ -60,13 +58,15 @@ local function bfs_topo_sort()
   local G = load_input(input)
   for from, to, _, depth in BFS:new(G, src):iterate() do
     local old_depth = node_depth[to]
-    assert(not old_depth or old_depth < depth)
-    if old_depth then -- recorded earlier at a lesser depth; so remove it.
-      depth_to_nodes[old_depth][to] = nil
+    assert(not old_depth or old_depth <= depth)
+    if old_depth ~= depth then
+      if old_depth then -- recorded earlier at a lesser depth; so remove it.
+        depth_to_nodes[old_depth][to] = nil
+      end
+      node_depth[to] = depth
+      depth_to_nodes[depth] = depth_to_nodes[depth] or {}
+      depth_to_nodes[depth][to] = true
     end
-    node_depth[to] = depth
-    depth_to_nodes[depth] = depth_to_nodes[depth] or {}
-    depth_to_nodes[depth][to] = true
   end
 
   local sorted = {}
@@ -80,4 +80,9 @@ end
 
 tim_test()
 scott_moura_test()
-bfs_topo_sort()
+bfs_topo_sort({'A-B=1', 'B-C=1', 'C-E=1', 'A-D=1', 'D-E=1'}, 'A')
+bfs_topo_sort({'A-B=1', 'B-C=1', 'C-D=1', 'A-D=1'}, 'A')
+-- Source https://en.wikipedia.org/wiki/Topological_sorting
+bfs_topo_sort(
+  {'0-3=1', '0-5=1', '0-7=1', '5-11=1', '11-2=1', '11-9=1', '11-10=1', '7-11=1', '7-8=1', '3-8=1', '3-10=1', '8-9=1'},
+  '0')
