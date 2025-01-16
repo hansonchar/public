@@ -15,14 +15,12 @@ local function _iterate(self)
     local vertex = self.graph:vertex(from)
     level = level + 1
     for to, weight in vertex:outgoings() do
-      if not visited[to] then
-        visited[to], self._visited_count = true, self._visited_count + 1
-        stack:push{to, weight, level, from}
-      end
+      stack:push{to, weight, level, from}
     end
     local t = (stack:pop() or E)
     from, level = t[1], t[3]
-    if from then
+    if from and not visited[from] then
+      visited[from], self._visited_count = true, self._visited_count + 1
       self._yield(t)
     end
   until not from
