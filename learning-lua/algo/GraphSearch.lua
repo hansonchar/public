@@ -18,6 +18,10 @@ function GraphSearch:iterate()
   end)
 end
 
+function GraphSearch:visited_count()
+  return self._visited_count
+end
+
 function GraphSearch:class(o)
   o = o or {}
   setmetatable(o, self)
@@ -39,6 +43,7 @@ function GraphSearch:new(G, src, func_iterate)
     src_vertex = src
   }
   o._iterate = func_iterate
+  o._visited_count = 0
   return o
 end
 

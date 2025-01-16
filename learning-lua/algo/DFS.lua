@@ -5,21 +5,27 @@ local DFS = GraphSearch:class()
 local E = {}
 
 local function _iterate(self)
-  local stack, visited = Stack:new(), {}
-  local depth = 0
+  local stack, visited = Stack:new(), {
+    [self.src_vertex] = true
+  }
+  self._visited_count = 1
+  local level = 0
   local from = self.src_vertex
   repeat
     local vertex = self.graph:vertex(from)
-    depth = depth + 1
+    level = level + 1
     for to, weight in vertex:outgoings() do
       if not visited[to] then
-        visited[to] = true
-        stack:push{to, weight, depth, from}
+        visited[to], self._visited_count = true, self._visited_count + 1
+        stack:push{to, weight, level, from}
       end
     end
-    local item = self._yield(stack:pop())
-    from, depth = item[1], item[3]
-  until not from -- note a cyclical path would lead to infinite iteration
+    local t = (stack:pop() or E)
+    from, level = t[1], t[3]
+    if from then
+      self._yield(t)
+    end
+  until not from
 end
 
 ---@param G (table) graph

@@ -5,7 +5,10 @@ local BFS = GraphSearch:class()
 local E = {}
 
 local function _iterate(self)
-  local q, visited = Queue:new(), {}
+  local q, visited = Queue:new(), {
+    [self.src_vertex] = true
+  }
+  self._visited_count = 1
   local level = 0
   local from = self.src_vertex
   repeat
@@ -13,14 +16,16 @@ local function _iterate(self)
     level = level + 1
     for to, weight in vertex:outgoings() do
       if not visited[to] then
-        visited[to] = true
-        coroutine.yield(from, to, weight, level)
+        visited[to], self._visited_count = true, self._visited_count + 1
         q:enqueue{to, weight, level, from}
       end
     end
-    local item = (q:dequeue() or E)
-    from, level = item[1], item[3]
-  until not from -- note a cyclical path would lead to infinite iteration
+    local t = (q:dequeue() or E)
+    from, level = t[1], t[3]
+    if from then
+      self._yield(t)
+    end
+  until not from
 end
 
 ---@param G (table) graph
