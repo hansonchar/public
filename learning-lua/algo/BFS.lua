@@ -5,15 +5,18 @@ local BFS = GraphSearch:class()
 local E = {}
 
 local function _iterate(self)
-  local q = Queue:new()
+  local q, visited = Queue:new(), {}
   local level = 0
   local from = self.src_vertex
   repeat
     local vertex = self.graph:vertex(from)
     level = level + 1
     for to, weight in vertex:outgoings() do
-      coroutine.yield(from, to, weight, level)
-      q:enqueue{to, weight, level, from}
+      if not visited[to] then
+        visited[to] = true
+        coroutine.yield(from, to, weight, level)
+        q:enqueue{to, weight, level, from}
+      end
     end
     local item = (q:dequeue() or E)
     from, level = item[1], item[3]
