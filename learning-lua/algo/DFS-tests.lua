@@ -78,11 +78,26 @@ local function verify_scott_order(a)
   assert(ordering.G < ordering.H)
 end
 
-local function verify_star(a)
+local function verify_star_order(a)
   -- print(table.concat(a, "-"))
   local ordering = a2ordering(a)
   assert(ordering.a == 1)
   assert(ordering.d < ordering.e)
+end
+
+local function verify_wiki_order(a)
+  -- print(table.concat(a, "-"))
+  local ordering = a2ordering(a)
+  assert(ordering['0'] == 1)
+  assert(ordering['11'] < ordering['10'])
+  assert(ordering['11'] < ordering['9'])
+  assert(ordering['11'] < ordering['2'])
+  assert(ordering['8'] < ordering['9'])
+  assert(ordering['3'] < ordering['8'])
+  assert(ordering['3'] < ordering['10'])
+  assert(ordering['7'] < ordering['8'])
+  assert(ordering['7'] < ordering['11'])
+  assert(ordering['5'] < ordering['11'])
 end
 
 -- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
@@ -98,6 +113,12 @@ verify_scott_order(topo_sort(g, 'A'))
 
 local g = {'a-b=1', 'a-c=1', 'a-d=1', 'd-e=1'}
 dfs_test(g, 'a', 5, 2)
-verify_star(topo_sort(g, 'a'))
+verify_star_order(topo_sort(g, 'a'))
+
+-- https://en.wikipedia.org/wiki/Topological_sorting
+local g = {'0-5=1', '0-7=1', '0-3=1', '5-11=1', '7-11=1', '7-8=1', '11-2=1', '11-9=1', '11-10=1', '8-9=1', '3-8=1',
+           '3-10=1'}
+dfs_test(g, '0', 9, 3)
+verify_wiki_order(topo_sort(g, '0'))
 
 os.exit()
