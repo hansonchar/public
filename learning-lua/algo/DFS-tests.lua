@@ -23,25 +23,22 @@ local function dfs_test(input, src, expected_visits, expected_max_level)
 end
 
 --- We define a terminal node as the node with the highest topological order in a DAG.
---- We idenity the terminal node by observing that, for the very first time,
---- if the DFS level doesn't increase, then the previous node (ie to node) visited must be the terminal node.
+--- We identify the terminal node by detecting the first node with no (unvisited) outgoing edges.
 local function topo_sort(input, src)
   local terminal -- the terminal node
-  local prev_level, prev_to = 0, src
   local level_visits = {}
   local G = load_input(input)
   local dfs = DFS:new(G, src)
-  for from, to, _, level in dfs:iterate() do
+  -- outgoings is the number of unvisited outgoing edges
+  for from, to, _, level, outgoings in dfs:iterate() do
     -- print(string.format("%d: %s-%s", level, from, to))
-    if not terminal and level <= prev_level then
-      terminal = prev_to
-      local visits = level_visits[prev_level] -- remove the terminal node from level_visits
-      visits[#visits] = nil -- as we handle the source and terminal node differently.
+    if not terminal and outgoings == 0 then
+      terminal = to
+    else
+      level_visits[level] = level_visits[level] or {}
+      local visits = level_visits[level]
+      visits[#visits + 1] = to
     end
-    level_visits[level] = level_visits[level] or {}
-    local visits = level_visits[level]
-    visits[#visits + 1] = to
-    prev_level, prev_to = level, to
   end
   local a = {src}
   for _, visits in ipairs(level_visits) do
