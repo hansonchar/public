@@ -15,6 +15,28 @@ function mt_vertex:incomings()
 end
 mt_vertex.__index = mt_vertex
 
+--- Returns true if there is an outgoing edge from 'from' to 'to'.
+---@param from (any) from node.
+---@param to (any) to node.
+function Graph:is_arc(from, to)
+  return self[from].egress[to]
+end
+
+--- Remove the specified node from this graph.
+--- Note this method requires Graph:build_ingress() to have been invoked.
+---@param node (any) the specified node to be removed
+function Graph:remove(node)
+  local egress = self[node].egress or E
+  local ingress = self[node].ingress or E
+  for v in pairs(egress) do
+    self[v].ingress[node] = nil
+  end
+  for v in pairs(ingress) do
+    self[v].egress[node] = nil
+  end
+  self[node] = nil
+end
+
 --- Adds a vertex u and optionally a weighted directional edge from u to v.
 ---@param u (string) vertex from
 ---@param v (string) vertex to (optional)
@@ -42,10 +64,15 @@ function Graph:build_ingress()
       v_node.ingress[u] = weight
     end
   end
+  return self
 end
 
 function Graph:vertices()
   return pairs(self)
+end
+
+function Graph:empty()
+  return not next(self)
 end
 
 ---@param v (string)

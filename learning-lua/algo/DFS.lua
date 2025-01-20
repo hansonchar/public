@@ -11,15 +11,18 @@ local E = {}
 ---@param stack (table) the stack to push edges to
 ---@param visited (table) used to check if a node has been visited
 ---@return (number) the number of unvisited outoing edges pushed to the stack
+---@return (number) the number of unvisited outoing edges already visited
 local function push_edges(self, from, level, stack, visited)
-  local vertex, count = self.graph:vertex(from), 0
+  local vertex, count_unvisited, count_visited = self.graph:vertex(from), 0, 0
   for to, weight in vertex:outgoings() do
-    if not visited[to] then
+    if visited[to] then
+      count_visited = count_visited + 1
+    else
       stack:push{to, weight, level, from}
-      count = count + 1
+      count_unvisited = count_unvisited + 1
     end
   end
-  return count
+  return count_unvisited, count_visited
 end
 
 local function _iterate(self)
@@ -32,9 +35,10 @@ local function _iterate(self)
       visited[from], self._visited_count = true, self._visited_count + 1
       local vertex = self.graph:vertex(from)
       level = level + 1
-      local count = push_edges(self, from, level, stack, visited)
+      local count_unvisited, count_visited = push_edges(self, from, level, stack, visited)
       if t then -- t is nil only during the first iteration when we are starting with the source node.
-        t[#t + 1] = count -- append the number of unvisited outgoing edges.
+        t[#t + 1] = count_unvisited -- append the number of unvisited outgoing edges.
+        t[#t + 1] = count_visited -- append the number of visited outgoing edges.
         self._yield(t)
       end
     end
