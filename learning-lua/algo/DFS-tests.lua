@@ -1,17 +1,19 @@
 local DFS = require "algo.DFS"
 local Graph = require "algo.Graph"
 
-local function load_input(input)
+---@param input (table) array of directed arcs in the format of, for example, "u-v".
+---@return (table) a Graph object
+local function load_edges(input)
   local G = Graph:new()
   for _, edge in ipairs(input) do
-    local from, to, cost = edge:match('(%w-)%-(%w+)=(%d+)')
-    G:add(from, to, cost)
+    local from, to = edge:match('(%w-)%-(%w+).*')
+    G:add(from, to, 1)
   end
   return G
 end
 
 local function dfs_test(input, src, expected_visits, expected_max_level)
-  local G = load_input(input)
+  local G = load_edges(input)
   local dfs, count, max_level = DFS:new(G, src), 1, 0
   for from, to, weight, level in dfs:iterate() do
     count = count + 1
@@ -22,12 +24,13 @@ local function dfs_test(input, src, expected_visits, expected_max_level)
   assert(max_level <= expected_max_level)
 end
 
+--- A creative way to do topo sorting.  See TopologicalSearch.lua for a more conventional way.
 --- We define a terminal node as the node with the highest topological order in a DAG.
 --- We identify the terminal node by detecting the first node with no (unvisited) outgoing edges.
 local function topo_sort(input, src)
   local terminal -- the terminal node
   local level_visits = {}
-  local G = load_input(input)
+  local G = load_edges(input)
   local dfs = DFS:new(G, src)
   -- outgoings is the number of unvisited outgoing edges
   for from, to, _, level, outgoings in dfs:iterate() do
@@ -100,24 +103,66 @@ local function verify_wiki_order(a)
   assert(ordering['5'] < ordering['11'])
 end
 
+local function single_vertex_test()
+  print("Testing single vertex ...")
+  local G = Graph:new()
+  G:add('a')
+  local dfs = DFS:new(G, 'a')
+  local count = 0
+  for from, to, weight, level in dfs:iterate() do
+    count = count + 1
+    assert(from == 'a')
+    assert(not to)
+    assert(not weight)
+    assert(level == 0)
+  end
+  assert(count == 1)
+end
+
+local function no_edges_test()
+  print("Testing graph with no edges ...")
+  local G = Graph:new()
+  G:add('a')
+  G:add('b')
+  G:add('c')
+  local dfs = DFS:new(G)
+  local count = 0
+  for from, to, weight, level in dfs:iterate() do
+    count = count + 1
+    assert(from)
+    assert(not to)
+    assert(not weight)
+    assert(level == 0)
+  end
+  assert(count == 3)
+end
+
+single_vertex_test()
+no_edges_test()
+
+print("Testing topo sort from Tim ...")
+local edges = {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4', '2-4',
+               '2-10', '4-7', '7-9'}
+local a = topo_sort(edges, '1')
+print(table.concat(a, "-"))
+
 -- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
-local g = {'s-v=1', 's-w=4', 'v-w=2', 'v-t=6', 'w-t=3'}
+local g = {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
 dfs_test(g, 's', 4, 2)
 verify_tim_order(topo_sort(g, 's'))
+-- os.exit()
 
 -- https://ecal.studentorg.berkeley.edu/files/ce191/CH05-DynamicProgramming.pdf by Prof. Scott Moura
-local g = {'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3', 'E-H=4', 'F-H=5',
-           'F-G=2', 'F-E=1', 'G-H=2'}
+local g = {'A-B', 'A-C', 'A-D', 'B-F', 'C-F', 'C-E', 'C-D', 'D-E', 'D-H', 'E-G', 'E-H', 'F-H', 'F-G', 'F-E', 'G-H'}
 dfs_test(g, 'A', 8, 5)
 verify_scott_order(topo_sort(g, 'A'))
 
-local g = {'a-b=1', 'a-c=1', 'a-d=1', 'd-e=1'}
+local g = {'a-b', 'a-c', 'a-d', 'd-e'}
 dfs_test(g, 'a', 5, 2)
 verify_star_order(topo_sort(g, 'a'))
 
 -- https://en.wikipedia.org/wiki/Topological_sorting
-local g = {'0-5=1', '0-7=1', '0-3=1', '5-11=1', '7-11=1', '7-8=1', '11-2=1', '11-9=1', '11-10=1', '8-9=1', '3-8=1',
-           '3-10=1'}
+local g = {'0-5', '0-7', '0-3', '5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10'}
 dfs_test(g, '0', 9, 3)
 verify_wiki_order(topo_sort(g, '0'))
 

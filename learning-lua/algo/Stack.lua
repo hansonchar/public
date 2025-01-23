@@ -21,6 +21,10 @@ function Stack:pop()
   end
 end
 
+function Stack:peek()
+  return self[#self]
+end
+
 function Stack:size()
   return #self
 end
