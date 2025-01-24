@@ -5,7 +5,7 @@ local Stack = require "algo.Stack"
 local TopologicalSearch = GraphSearch:class()
 
 local function debug(...)
-  --   print(...)
+    -- print(...)
 end
 
 --- Returns vertices in descending topological order.
@@ -18,29 +18,31 @@ local function _iterate(self, src)
     stack:push(src)
   end
   for from, to in DFS:new(self.graph, src, nav_spec, src_spec):iterate() do
-    if not src then
+    if not src then -- this condition can be true at most once at the beginning of a topo search.
       debug(string.format("Topo search starting from %s", from))
       src = from
       stack:push(src)
     end
     debug(string.format("%s-%s", from, to))
-    while stack:peek() ~= from do
+    while stack:peek() ~= from do -- enter the loop when the next node comes from a different branch.
       local node = stack:pop()
       if node then
-        coroutine.yield(node)
+        coroutine.yield(node, stack:empty())
       else -- started from a different vertex
         assert(not param_src) -- only possible if no src specified in the input parameter
-        debug(string.format("Topo search starting from %s", from))
-        src = from
-        stack:push(src)
+        debug(string.format("Topo search re-starting from %s", from))
+        stack:push(from)
       end
     end
     if to then -- 'to' can be nil if 'from' is a lone starting vertex
       stack:push(to)
     end
   end
-  while not stack:empty() do
-    coroutine.yield(stack:pop())
+  local empty = stack:empty()
+  while not empty do
+    local node = stack:pop()
+    empty = stack:empty()
+    coroutine.yield(node, empty)
   end
 end
 

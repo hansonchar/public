@@ -146,7 +146,7 @@ local edges = {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6',
 local a = topo_sort(edges, '1')
 print(table.concat(a, "-"))
 
--- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
+-- Algorithms Illuminated Part 2 by Prof. Tim Roughgarden
 local g = {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
 dfs_test(g, 's', 4, 2)
 verify_tim_order(topo_sort(g, 's'))

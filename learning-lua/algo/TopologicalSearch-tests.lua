@@ -126,7 +126,7 @@ local function verify_lowest_topo_ele_on_transpose(G)
   assert(not G:is_transposed())
 end
 
--- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
+-- Algorithms Illuminated Part 2 by Prof. Tim Roughgarden
 print("Testing descending topological iteration from Tim ...")
 local G = load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
                       '2-4', '2-10', '4-7', '7-9'}

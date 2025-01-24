@@ -5,7 +5,7 @@ local DFS = GraphSearch:class()
 local E = {}
 
 local function debug(...)
-  print(...)
+  -- print(...)
 end
 
 --- Push all unvisited outgoing edges to the stack.
@@ -99,11 +99,13 @@ local function _iterate(self)
       if t then -- t is nil only during the first iteration when we are starting with the source node.
         t[#t + 1] = count_unvisited -- append the number of unvisited outgoing edges.
         t[#t + 1] = count_visited -- append the number of visited outgoing edges.
+        t[#t + 1] = beginning -- append the source vertex.
         self._yield(t)
       elseif push_count == 0 and from == beginning then -- the starting node is the only node with unvisited edges.
         visited[from], self._visited_count = true, self._visited_count + 1
         (unvisited_vertices or E)[from] = nil
-        self._yield {nil, nil, 0, from} -- yield it anyway so we don't loose a vertex during DFS
+        -- format: to, weight, depth, from, count_unvisited, count_visited, beginning
+        self._yield {nil, nil, 0, from, 0, 0, beginning} -- yield it anyway so we don't loose a vertex during DFS
       end
     end
     t = (stack:pop() or E)
