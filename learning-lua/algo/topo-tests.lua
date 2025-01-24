@@ -74,14 +74,32 @@ local function verify_wiki_order(a)
   assert(ordering['5'] < ordering['11'])
 end
 
-local function topo_test(G, nav_spec, src)
-  local topo, a = TopologicalSearch:new(G, nav_spec), {}
+local function topo_test(G, nav_spec, src, src_spec)
+  local topo, a = TopologicalSearch:new(G, nav_spec, src_spec), {}
   for v in topo:iterate(src) do -- nodes in descending topological order
     a[#a + 1] = v
   end
   debug(table.concat(a, " <- "))
-  debug()
   return a
+end
+
+local function verify_lowest_topo_ele_in_1st_scc(G)
+  local src_spec
+  for i = 1, 11 do
+    src_spec = {}
+    for j = i, i + 11 do
+      src_spec[#src_spec + 1] = tostring((j - 1) % 11 + 1)
+    end
+    local a = topo_test(G, nil, nil, src_spec)
+    local is_part_of_1st_scc = false
+    for _, v in ipairs {'1', '3', '5'} do
+      if v == a[11] then
+        is_part_of_1st_scc = true
+        break
+      end
+    end
+    assert(is_part_of_1st_scc, "Element of lowest topological order must be part of the 1st SCC")
+  end
 end
 
 -- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
@@ -108,6 +126,34 @@ local nav_spec = { -- navigation preference
 local a = topo_test(G, nav_spec, '1') -- for a single specific source vertex
 assert(table.concat(reversed(a), "-") == "1-3-11-5-7-9-2-10-8-6-4") -- ascending topological order
 
+print("\nDFS from source vertices in ascending order on Tim's Figure 8.16 ...")
+local src_spec = {}
+for i = 1, 11 do
+  src_spec[#src_spec + 1] = tostring(i)
+end
+local a = reversed(topo_test(G, nav_spec, nil, src_spec))
+local s = table.concat(a, "-")
+debug(s)
+assert(s == "1-3-11-5-7-9-2-10-8-6-4")
+print()
+
+print("\nDFS from source vertices in descending order on Tim's Figure 8.16 ...")
+local nav_spec = { -- navigation preference
+  ['11'] = {'6', '8'}, -- visit (11, 6) before (11, 8)
+  ['9'] = {'2', '4'} -- visit (9, 2) before (9, 4)
+}
+
+local a = reversed(topo_test(G, nav_spec, nil, reversed(src_spec)))
+local s = table.concat(a, "-")
+debug(s)
+assert(s == "5-1-3-9-2-4-7-11-6-10-8")
+print()
+
+print("Verify the element of the lowest topological order must always be part of the 1st SCC ...")
+verify_lowest_topo_ele_in_1st_scc(G)
+print()
+
+print("Other DFS tests on Tim's graph ...")
 nav_spec = nil
 local G = load_edges {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
 local src = 's'

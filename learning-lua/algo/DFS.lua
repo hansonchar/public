@@ -63,12 +63,23 @@ end
 
 local function _iterate(self)
   local stack, visited = Stack:new(), {}
-  local unvisited_vertices
+  -- Applicable only if a single source is not specified for this DFS.
+  -- If a single source is specified, the DFS will only be performed from that source vertex.
+  -- Otherwise, DFS is performed from potentially many source vertices until all vertices have been explored.
+  local unvisited_vertices -- Contains vertices that have not been visited; visited ones are erased.
+  local src_spec_idx = 0
   self._visited_count = 0
-  if not self.src_vertex then
+  local from = self.src_vertex -- DFS from a single source vertex
+  if not from then -- DFS from potentially many source vertices
     unvisited_vertices = vertices_of(self.graph)
+    local next_unvisited = next(unvisited_vertices) -- we are done if all vertices have been visited.
+    if next_unvisited then
+      local src_spec = self._src_spec
+      src_spec_idx = src_spec_idx + 1
+      from = src_spec[src_spec_idx] -- give preference to the specified sequence of source vertices.
+      from = from or next_unvisited
+    end
   end
-  local from = self.src_vertex or next(self.graph)
 
   -- A DFS retry is necessary if no source vertex is explicitly specified, and a preious DFS
   -- from an arbitrary vertex doesn't cover the entire graph.  In that case, another
@@ -101,9 +112,17 @@ local function _iterate(self)
       unvisited_vertices[from] = nil
     end
   end
-  if unvisited_vertices then -- implies doing the search for the entire graph
-    from = next(unvisited_vertices)
-    if from then
+  if unvisited_vertices then -- implies doing the search for the entire graph.
+    local next_unvisited = next(unvisited_vertices) -- we are done if all vertices have been visited.
+    if next_unvisited then
+      local src_spec = self._src_spec
+      src_spec_idx = src_spec_idx + 1
+      from = src_spec[src_spec_idx] -- give preference to the specified sequence of source vertices.
+      while from and not unvisited_vertices[from] do -- skip those vertices we have visited.
+        src_spec_idx = src_spec_idx + 1
+        from = src_spec[src_spec_idx]
+      end
+      from = from or next_unvisited
       level = 0
       debug(string.format("DFS retrying from %s", from))
       beginning = from
@@ -114,9 +133,10 @@ end
 
 ---@param G (table) graph
 ---@param src (any) source vertex
----@param nav_spec (table) navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {3={5,11}, 5={7,9}}
-function DFS:new(G, src, nav_spec)
-  return getmetatable(self):new(G, src, _iterate, nav_spec)
+---@param nav_spec (table) opional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
+---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if 'src' is not specified
+function DFS:new(G, src, nav_spec, src_spec)
+  return getmetatable(self):new(G, src, _iterate, nav_spec, src_spec)
 end
 
 return DFS

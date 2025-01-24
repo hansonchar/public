@@ -12,12 +12,12 @@ end
 ---@param src (any) source vertex
 local function _iterate(self, src)
   local param_src = src
-  local nav_spec = self._nav_spec
+  local nav_spec, src_spec = self._nav_spec, self._src_spec
   local stack, a = Stack:new(), {}
   if src then
     stack:push(src)
   end
-  for from, to in DFS:new(self.graph, src, nav_spec):iterate() do
+  for from, to in DFS:new(self.graph, src, nav_spec, src_spec):iterate() do
     if not src then
       debug(string.format("Topo search starting from %s", from))
       src = from
@@ -45,9 +45,10 @@ local function _iterate(self, src)
 end
 
 ---@param G (table) graph
----@param nav_spec (table) navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {3={5,11}, 5={7,9}}
-function TopologicalSearch:new(G, nav_spec)
-  return getmetatable(self):new(G, nil, _iterate, nav_spec)
+---@param nav_spec (table) optional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
+---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if a single source vertex is not specified
+function TopologicalSearch:new(G, nav_spec, src_spec)
+  return getmetatable(self):new(G, nil, _iterate, nav_spec, src_spec)
 end
 
 return TopologicalSearch

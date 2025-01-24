@@ -13,18 +13,6 @@ local function _yield(item)
   end
 end
 
--- local function build_navigation(self)
---   if self._nav_spec then
---     local nav = {}
---     for from, to_list in pairs(self._nav_spec) do
---       local q = Queue:new()
---       q:enqueue(table.unpack(to_list))
---       nav[from] = q
---     end
---     return nav
---   end
--- end
-
 ---@param src (any) optional source vertex; this takes precedence.
 function GraphSearch:iterate(src)
   self._visited_count = 0
@@ -50,7 +38,8 @@ end
 ---@param src (any) source vertex (optional)
 ---@param func_iterate (function) function for iteration
 ---@param nav_spec (table) optional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
-function GraphSearch:new(G, src, func_iterate, nav_spec)
+---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if 'src' is not specified
+function GraphSearch:new(G, src, func_iterate, nav_spec, src_spec)
   assert(G, "Missing Graph")
   assert(Graph.isGraph(G), "G must be a graph object")
   -- assert(src, "Missing source vertex")
@@ -61,6 +50,7 @@ function GraphSearch:new(G, src, func_iterate, nav_spec)
   }
   o._iterate = func_iterate
   o._nav_spec = nav_spec or E
+  o._src_spec = src_spec or E
   return o
 end
 
