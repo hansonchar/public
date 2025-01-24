@@ -102,6 +102,30 @@ local function verify_lowest_topo_ele_in_1st_scc(G)
   end
 end
 
+local function verify_lowest_topo_ele_on_transpose(G)
+  assert(not G:is_transposed())
+  G:transpose()
+  assert(G:is_transposed())
+  local src_spec
+  for i = 1, 11 do
+    src_spec = {}
+    for j = i, i + 11 do
+      src_spec[#src_spec + 1] = tostring((j - 1) % 11 + 1)
+    end
+    local a = topo_test(G, nil, nil, src_spec)
+    local is_part_of_sink_scc = false
+    for _, v in ipairs {'6', '8', '10'} do
+      if v == a[11] then
+        is_part_of_sink_scc = true
+        break
+      end
+    end
+    assert(is_part_of_sink_scc, "Element of lowest topological order after transpose must be part of the sink SCC")
+  end
+  G:transpose()
+  assert(not G:is_transposed())
+end
+
 -- Algoriths Illuminated Part 2 by Prof. Tim Roughgarden
 print("Testing descending topological iteration from Tim ...")
 local G = load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
@@ -151,6 +175,12 @@ print()
 
 print("Verify the element of the lowest topological order must always be part of the 1st SCC ...")
 verify_lowest_topo_ele_in_1st_scc(G)
+print()
+
+print("Verify the element of the lowest topological order after tranpose ...")
+assert(not G:is_ingress_built())
+verify_lowest_topo_ele_on_transpose(G)
+assert(G:is_ingress_built())
 print()
 
 print("Other DFS tests on Tim's graph ...")

@@ -52,13 +52,34 @@ local function test_build_ingress()
   local G = load_input(input)
   G:build_ingress()
   local incoming, count_i = G:incoming_str()
-  -- print(incoming)
+  print(incoming)
   local outgoing, count_e = G:outgoing_str()
-  -- print(outgoing)
+  print(outgoing)
   assert(count_e == count_i)
+  assert(G:is_arc('A', 'B') == 2)
+  assert(not G:is_arc('B', 'A'))
+end
+
+local function test_transpose()
+  print("test_transpose ... ")
+  local input<const> = {'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
+                        'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2'}
+  local source<const> = 'A'
+  local G = load_input(input)
+  G:build_ingress()
+  assert(not G:is_transposed())
+  assert(not G:transpose())
+  assert(G:is_transposed())
+  local incoming, count_i = G:incoming_str()
+  print(incoming)
+  local outgoing, count_e = G:outgoing_str()
+  print(outgoing)
+  assert(count_e == count_i)
+  assert(not G:is_arc('A', 'B'))
+  assert(G:is_arc('B', 'A') == 2)
 end
 
 basic_tests()
 test_build_ingress()
-
+test_transpose()
 os.exit()

@@ -7,19 +7,36 @@ local E = {}
 -- }
 
 local mt_vertex = {}
-function mt_vertex:outgoings()
-  return pairs(self.egress and self.egress or E)
-end
-function mt_vertex:incomings()
-  return pairs(self.ingress and self.ingress or E)
-end
 mt_vertex.__index = mt_vertex
+
+function mt_vertex:outgoings()
+  local xtra_info = getmetatable(self.graph)
+  if xtra_info._is_transposed then
+    return pairs(self.ingress and self.ingress or E)
+  else
+    return pairs(self.egress and self.egress or E)
+  end
+end
+
+function mt_vertex:incomings()
+  local xtra_info = getmetatable(self.graph)
+  if xtra_info._is_transposed then
+    return pairs(self.egress and self.egress or E)
+  else
+    return pairs(self.ingress and self.ingress or E)
+  end
+end
 
 --- Returns true if there is an outgoing edge from 'from' to 'to'.
 ---@param from (any) from node.
 ---@param to (any) to node.
 function Graph:is_arc(from, to)
-  return self[from].egress[to]
+  local xtra_info = getmetatable(self)
+  if xtra_info._is_transposed then
+    return (self[from].ingress or E)[to]
+  else
+    return self[from].egress[to]
+  end
 end
 
 --- Remove the specified node from this graph.
@@ -38,12 +55,16 @@ function Graph:remove(node)
 end
 
 --- Adds a vertex u and optionally a weighted directional edge from u to v.
+--- (FEATURE): Calling this method after Graph:build_ingress() would lead to undefined behavior.
 ---@param u (string) vertex from
 ---@param v (string) vertex to (optional)
 ---@param weight (number) weight of u-v
 function Graph:add(u, v, weight)
+  assert(not self:is_ingress_built(), "Currently calling this method after Graph:build_ingress() would lead to undefined behavior.")
   if not self[u] then
-    self[u] = setmetatable({}, mt_vertex)
+    self[u] = setmetatable({
+      graph = self
+    }, mt_vertex)
   end
   self[u].egress = self[u].egress or {}
   local egress = self[u].egress
@@ -51,12 +72,16 @@ function Graph:add(u, v, weight)
     assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
     egress[v] = tonumber(weight)
     if not self[v] then -- add v as a vertex
-      self[v] = setmetatable({}, mt_vertex)
+      self[v] = setmetatable({
+        graph = self
+      }, mt_vertex)
     end
   end
 end
 
+--- (FEATURE): Currently this method can be called at most once; otherwise undefined behavior.
 function Graph:build_ingress()
+  assert(not self:is_ingress_built(), "Currently Graph:build_ingress() can be called at most once")
   for u, u_node in pairs(self) do
     for v, weight in pairs(u_node.egress or E) do
       local v_node = self[v]
@@ -64,7 +89,14 @@ function Graph:build_ingress()
       v_node.ingress[u] = weight
     end
   end
+  local xtra_info = getmetatable(self)
+  xtra_info._is_ingress_built = true
   return self
+end
+
+function Graph:is_ingress_built()
+  local xtra_info = getmetatable(self)
+  return xtra_info._is_ingress_built
 end
 
 function Graph:vertices()
@@ -153,10 +185,25 @@ function Graph.isGraph(o)
   end
 end
 
+function Graph:is_transposed()
+  local xtra_info = getmetatable(self)
+  return xtra_info._is_transposed
+end
+
+function Graph:transpose()
+  if not self:is_ingress_built() then
+    self:build_ingress()
+  end
+  local xtra_info = getmetatable(self)
+  xtra_info._is_transposed = not xtra_info._is_transposed
+  return not xtra_info._is_transposed -- return the old value
+end
+
 function Graph:new()
-  local o = {}
-  setmetatable(o, self)
+  local xtra_info = setmetatable({}, self) -- used to store graph instance specific additional info
   self.__index = self
+  local o = setmetatable({}, xtra_info)
+  xtra_info.__index = xtra_info
   return o
 end
 
