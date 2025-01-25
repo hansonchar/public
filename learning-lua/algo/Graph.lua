@@ -61,6 +61,7 @@ end
 ---@param weight (number) weight of u-v
 function Graph:add(u, v, weight)
   assert(not self:is_ingress_built(), "Currently calling this method after Graph:build_ingress() would lead to undefined behavior.")
+  weight = weight or 1
   if not self[u] then
     self[u] = setmetatable({
       graph = self
