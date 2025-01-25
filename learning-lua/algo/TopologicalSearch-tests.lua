@@ -4,7 +4,7 @@ local TopologicalSearch = require "algo.TopologicalSearch"
 local E = {}
 
 local function debug(...)
-  print(...)
+  -- print(...)
 end
 
 ---@param input (table) array of directed arcs in the format of, for example, "u-v".
@@ -62,7 +62,6 @@ end
 local function verify_wiki_order(a)
   -- print(table.concat(a, "-"))
   local ordering = a2ordering(reversed(a))
-  assert(ordering['0'] == 1)
   assert(ordering['11'] < ordering['10'])
   assert(ordering['11'] < ordering['9'])
   assert(ordering['11'] < ordering['2'])
@@ -175,37 +174,39 @@ print()
 
 print("Verify the element of the lowest topological order must always be part of the 1st SCC ...")
 verify_lowest_topo_ele_in_1st_scc(G)
-print()
 
-print("Verify the element of the lowest topological order after tranpose ...")
+print("\nVerify the element of the lowest topological order after tranpose ...")
 assert(not G:is_ingress_built())
 verify_lowest_topo_ele_on_transpose(G)
 assert(G:is_ingress_built())
-print()
 
-print("Other DFS tests on Tim's graph ...")
+print("\nOther DFS tests on Tim's graph ...")
 nav_spec = nil
 local G = load_edges {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
 local src = 's'
 local a = topo_test(G, nav_spec, src)
 assert(table.concat(reversed(a), "-") == "s-v-w-t")
 
+print("Testing topological sorting example from Scott ...")
 -- https://ecal.studentorg.berkeley.edu/files/ce191/CH05-DynamicProgramming.pdf by Prof. Scott Moura
 local G = load_edges {'A-B', 'A-C', 'A-D', 'B-F', 'C-F', 'C-E', 'C-D', 'D-E', 'D-H', 'E-G', 'E-H', 'F-H', 'F-G', 'F-E',
                       'G-H'}
 local src = 'A'
-local a = topo_test(G, nav_spec, src)
-verify_scott_order(a)
+verify_scott_order(topo_test(G, nav_spec, src))
 
 local G = load_edges {'a-b', 'a-c', 'a-d', 'd-e'}
 local src = 'a'
-local a = topo_test(G, nav_spec, src)
-verify_star_order(a)
+verify_star_order(topo_test(G, nav_spec, src))
 
+print("Testing topological sorting example from wikipedia ...")
 -- https://en.wikipedia.org/wiki/Topological_sorting
-local G = load_edges {'0-5', '0-7', '0-3', '5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10'}
-local src = '0'
-local a = topo_test(G, nav_spec, src)
-verify_wiki_order(a)
+local G = load_edges {'5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10'}
+verify_wiki_order(topo_test(G))
 
+local G = load_edges {'5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10'}
+local nav_spec = {
+  ['11'] = {'2', '9'}
+}
+local src_spec = {'5', '7', '3'}
+verify_wiki_order(topo_test(G, nav_spec, nil, src_spec))
 os.exit()
