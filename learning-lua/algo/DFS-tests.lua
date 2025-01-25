@@ -33,13 +33,13 @@ local function topo_sort(input, src)
   local G = load_edges(input)
   local dfs = DFS:new(G, src)
   -- outgoings is the number of unvisited outgoing edges
-  for from, to, _, level, outgoings in dfs:iterate() do
+  for from, to, _, depth, outgoings in dfs:iterate() do
     -- print(string.format("%d: %s-%s", level, from, to))
     if not terminal and outgoings == 0 then
       terminal = to
     else
-      level_visits[level] = level_visits[level] or {}
-      local visits = level_visits[level]
+      level_visits[depth] = level_visits[depth] or {}
+      local visits = level_visits[depth]
       visits[#visits + 1] = to
     end
   end
@@ -109,12 +109,12 @@ local function single_vertex_test()
   G:add('a')
   local dfs = DFS:new(G, 'a')
   local count = 0
-  for from, to, weight, level in dfs:iterate() do
+  for from, to, weight, depth in dfs:iterate() do
     count = count + 1
     assert(from == 'a')
     assert(not to)
     assert(not weight)
-    assert(level == 0)
+    assert(depth == 0)
   end
   assert(count == 1)
 end
@@ -127,12 +127,12 @@ local function no_edges_test()
   G:add('c')
   local dfs = DFS:new(G)
   local count = 0
-  for from, to, weight, level in dfs:iterate() do
+  for from, to, weight, depth in dfs:iterate() do
     count = count + 1
     assert(from)
     assert(not to)
     assert(not weight)
-    assert(level == 0)
+    assert(depth == 0)
   end
   assert(count == 3)
 end

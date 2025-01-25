@@ -40,7 +40,7 @@ local function _iterate(self)
   debug(table.concat(src_spec, ","))
   local dfs = DFS:new(G, nil, nil, src_spec)
   local scc_src_vertex
-  for from, to, _, _, _, _, src_vertex in dfs:iterate() do
+  for from, to, _, _, _, src_vertex in dfs:iterate() do
     debug(string.format("from=%s to=%s, src_vertex=%s", from, to, src_vertex))
     if scc_src_vertex == src_vertex then -- During a DFS, but not at the first (re-)starting node.
       count = count + 1 -- We only need to yield 'to' because the 'from' must be the same

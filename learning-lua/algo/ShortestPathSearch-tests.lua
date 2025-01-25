@@ -1,6 +1,10 @@
 local ShortestPathSearch = require "algo.ShortestPathSearch"
 local Graph = require "algo.Graph"
 
+local function debug(...)
+  print(...)
+end
+
 local function basic_tests()
   print("ShortestPathSearch basic tests...")
   local G = Graph:new()
@@ -12,7 +16,7 @@ local function basic_tests()
 
   local search = ShortestPathSearch:new(G, 's')
   for from, to, weight, level, min_cost in search:iterate() do
-    -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
+    debug(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
   end
 
   local sssp = search:shortest_paths()

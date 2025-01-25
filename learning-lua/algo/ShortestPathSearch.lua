@@ -4,36 +4,38 @@ local GraphSearch = require "algo.GraphSearch"
 local ShortestPathSearch = GraphSearch:class()
 local E = {}
 
+local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, COST_SO_FAR<const> = 1, 2, 3, 4, 5
+
 -- Uses Dijkstra's algorithm
 local function _iterate(self)
   local G, s, sssp = self.graph, self.src_vertex, self.sssp
   local heap = BinaryHeap:new({}, function(a, b)
-    local a, b = a[1], b[1]
+    local a, b = a[TO], b[TO]
     return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
   end)
   local depth = 0
-  local from = self.src_vertex
+  local node = self.src_vertex
   repeat
-    sssp.vertices[from].ref = nil -- nullify from's heap reference as from is no longer on the heap
-    local vertex = self.graph:vertex(from)
+    sssp.vertices[node].ref = nil -- nullify from's heap reference as from is no longer on the heap
+    local vertex = self.graph:vertex(node)
     depth = depth + 1
     for to, weight in vertex:outgoings() do
       assert(weight >= 0, "Weight must not be negative")
-      local v_info, v_cost_so_far = sssp.vertices[to], sssp.vertices[from].min_cost + weight
+      local v_info, v_cost_so_far = sssp.vertices[to], sssp.vertices[node].min_cost + weight
       if v_cost_so_far < v_info.min_cost then
         v_info.min_cost = v_cost_so_far
-        v_info.from = from
+        v_info.from = node
         local v_ref = v_info.ref
         if v_ref then
-          local removed = heap:remove(v_ref.pos)
-          assert(removed[1] == to, string.format("removed: %s, to: %s", removed[1], to)) -- remove from heap if necessary before adding
+          local entry = heap:remove(v_ref.pos)
+          assert(entry[TO] == to, string.format("removed: %s, to: %s", entry[TO], to)) -- remove from heap if necessary before adding
         end
-        v_info.ref = heap:add{to, weight, depth, from, v_cost_so_far}
+        v_info.ref = heap:add{node, to, weight, depth, v_cost_so_far}
       end
     end
     local item = self._yield(heap:remove())
-    from, depth = item[1], item[3]
-  until not from -- note a cyclical path would lead to infinite iteration
+    node, depth = item[TO], item[DEPTH]
+  until not node -- note a cyclical path would lead to infinite iteration
 end
 
 local function shortest_path_of(sssp, dst)

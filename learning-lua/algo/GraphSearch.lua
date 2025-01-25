@@ -3,11 +3,10 @@ local GraphSearch = {} -- A common base class for DFS, BFS, etc.
 -- local Queue = require "algo.Queue"
 local E = {}
 
-local function _yield(item)
-  if item then
-    local to, weight, depth, from = table.unpack(item)
-    coroutine.yield(from, to, weight, depth, table.unpack(item, 5))
-    return item
+local function _yield(entry)
+  if entry then
+    coroutine.yield(table.unpack(entry))
+    return entry
   else
     return E
   end
