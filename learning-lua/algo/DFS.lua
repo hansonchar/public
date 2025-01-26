@@ -5,7 +5,8 @@ local DFS = GraphSearch:class()
 local E = {}
 
 -- Element index of a stack entry with the format: {from, to, weight, depth, count_unvisited, begin_vertex, is_visited}
-local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, UNVISITED<const>, BEGIN_VERTEX<const>, IS_VISITED<const> = 1, 2, 3, 4, 5, 6, 7
+local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, UNVISITED<const>, BEGIN_VERTEX<const>, IS_VISITED<const> = 1,
+  2, 3, 4, 5, 6, 7
 
 local function debug(...)
   -- print(...)
@@ -16,10 +17,10 @@ end
 ---@param from (any) from node
 ---@param level (number) the number of hops from the source node
 ---@param stack (table) the stack to push edges to
----@param visited (table) used to check if a node has been visited
+---@param visited_hist (table) used to check if a node has been visited
 ---@return (number) the number of unvisited outgoing edges pushed to the stack
 ---@return (number) the number of stack pushes
-local function push_edges(self, from, level, stack, visited)
+local function push_edges(self, from, level, stack, visited_hist, is_include_visited)
   local vertex, count_unvisited = self.graph:vertex(from), 0
   local visits_first = {} -- used to record vertices already taken care of via preferrential navigation
   local preferred_nav_order = self._nav_spec[from] or E -- e.g. {'1','2'}
@@ -31,7 +32,14 @@ local function push_edges(self, from, level, stack, visited)
   local push_count = 0
   for to, weight in vertex:outgoings() do
     if not visits_first[to] then
-      if not visited[to] then
+      if visited_hist[to] then -- already explored node
+        if is_include_visited then
+          -- Ignoring the 'unvisited count' and 'begin vertex' for now.
+          local entry = {from, to, weight, level}
+          entry[IS_VISITED] = true
+          stack:push(entry)
+        end
+      else -- unexplored node
         stack:push{from, to, weight, level}
         push_count = push_count + 1
         count_unvisited = count_unvisited + 1
@@ -42,7 +50,15 @@ local function push_edges(self, from, level, stack, visited)
   -- get pushed to the top of the stack.
   for i = #preferred_nav_order, 1, -1 do -- push to the stack in reversed order.
     local to = preferred_nav_order[i]
-    if not visited[to] then
+    if visited_hist[to] then -- already explored node
+      if is_include_visited then
+        local weight = vertex.egress[to]
+        -- Ignoring the 'unvisited count' and 'begin vertex' for now.
+        local entry = {from, to, weight, level}
+        entry[IS_VISITED] = true
+        stack:push(entry)
+      end
+    else -- unexplored node
       local weight = vertex.egress[to]
       stack:push{from, to, weight, level}
       push_count = push_count + 1
@@ -60,18 +76,18 @@ local function vertices_of(G)
   return vertices
 end
 
----@param src (any) optional source vertex; this takes precedence.
----@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.
+---@param src (any) optional source vertex. If specified, DFS will only be performed from this source vertex (ie. not necessarily exploring all nodes in the graph.).  Otherwise, DFS will be performed on the entire graph exploring all nodes.
+---@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.  This can be useful in special circumstances, such as implementing the Tarjan's SCC algorithm.
 local function _iterate(self, src, is_include_visited)
-  local stack, visited = Stack:new(), {}
-  -- Applicable only if a single source is not specified for this DFS.
+  local stack, visited_hist = Stack:new(), {}
+  -- Applicable only if a single source (ie the 'src' parameter) is not specified for this DFS.
   -- If a single source is specified, the DFS will only be performed from that source vertex.
   -- Otherwise, DFS is performed from potentially many source vertices until all vertices have been explored.
   local unvisited_vertices -- Contains vertices that have not been visited; visited ones are erased.
   local src_spec_idx = 0
   self._visited_count = 0
-  local node = src -- DFS from a single source vertex
-  if not node then -- DFS from potentially many source vertices
+  local node = src -- DFS from a single source vertex.
+  if not node then -- DFS from potentially many source vertices.
     unvisited_vertices = vertices_of(self.graph)
     local next_unvisited = next(unvisited_vertices) -- we are done if all vertices have been visited.
     if next_unvisited then
@@ -81,7 +97,7 @@ local function _iterate(self, src, is_include_visited)
       node = node or next_unvisited
     end
   end
-
+  local is_visited -- applicable only if 'is_include_visited' is true.
   -- A DFS retry is necessary if no source vertex is explicitly specified, and a preious DFS
   -- from an arbitrary vertex doesn't cover the entire graph.  In that case, another
   -- vertex will be used for a DFS retry.
@@ -89,31 +105,41 @@ local function _iterate(self, src, is_include_visited)
   local depth = 0
   debug(string.format("DFS starting from %s", node))
   ::retry::
-  local entry -- format: {from, to, weight, depth, count_unvisited, begin_vertex}
+  local entry -- format: {from, to, weight, depth, count_unvisited, begin_vertex, is_visited}
   while node do
-    if not visited[node] then
-      visited[node], self._visited_count = true, self._visited_count + 1
+    if  visited_hist[node] then
+      if is_include_visited then
+        entry[IS_VISITED] = true
+        self._yield(entry)
+      end
+    else
+      visited_hist[node], self._visited_count = true, self._visited_count + 1
       (unvisited_vertices or E)[node] = nil
       local vertex = self.graph:vertex(node)
       depth = depth + 1
-      local count_unvisited, push_count = push_edges(self, node, depth, stack, visited)
+      local count_unvisited, push_count = push_edges(self, node, depth, stack, visited_hist, is_include_visited)
       if entry then -- t is nil only during the first iteration when we are starting with the source node.
         entry[UNVISITED] = count_unvisited -- number of unvisited outgoing edges.
         entry[BEGIN_VERTEX] = begin_vertex -- the source vertex of the DFS.
         self._yield(entry)
       elseif push_count == 0 and node == begin_vertex then -- the starting node is the only node with unvisited edges.
-        visited[node], self._visited_count = true, self._visited_count + 1
+        visited_hist[node], self._visited_count = true, self._visited_count + 1
         (unvisited_vertices or E)[node] = nil
         -- format: {from, to, weight, depth, count_unvisited, begin_vertex}
         self._yield {node, nil, nil, 0, 0, begin_vertex} -- yield it anyway so we don't loose a vertex during DFS
       end
     end
     entry = (stack:pop() or E)
-    node, depth = entry[TO], entry[DEPTH]
+    node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_VISITED]
+    while is_visited do -- only possible if 'is_include_visited' is true.
+      self._yield(entry)
+      entry = (stack:pop() or E)
+      node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_VISITED]
+    end
     if unvisited_vertices and node then
       unvisited_vertices[node] = nil
     end
-  end
+  end -- end while
   if unvisited_vertices then -- implies doing the search for the entire graph.
     local next_unvisited = next(unvisited_vertices) -- we are done if all vertices have been visited.
     if next_unvisited then

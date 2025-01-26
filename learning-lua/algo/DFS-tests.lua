@@ -167,3 +167,17 @@ dfs_test(g, '0', 9, 3)
 verify_wiki_order(topo_sort(g, '0'))
 
 os.exit()
+
+-- Some demo on when 'is_include_visited' is set to true.
+local G = load_edges {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
+for from, to, _weight, depth, _unvisited_cnt, _begin_vertex, is_visited in DFS:new(G):iterate('s', true) do
+  print(string.format("%d: %s-%s (visited:%s)", depth, from, to, is_visited))
+end
+print()
+local G = load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
+                      '2-4', '2-10', '4-7', '7-9'}
+for from, to, _weight, depth, _unvisited_cnt, _begin_vertex, is_visited in DFS:new(G):iterate('1', true) do
+  print(string.format("%d: %s-%s (visited:%s)", depth, from, to, is_visited))
+end
+
+os.exit()
