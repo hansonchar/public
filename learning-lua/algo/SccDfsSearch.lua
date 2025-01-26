@@ -38,7 +38,7 @@ local function _iterate(self)
   local scc_id, count = 0, 0
   local src_spec = reversed(src_spec)
   debug(table.concat(src_spec, ","))
-  local dfs = DFS:new(G, nil, nil, src_spec)
+  local dfs = DFS:new(G, nil, src_spec)
   local scc_src_vertex
   for from, to, _, _, _, src_vertex in dfs:iterate() do
     debug(string.format("from=%s to=%s, src_vertex=%s", from, to, src_vertex))
@@ -60,7 +60,7 @@ end
 
 ---@param G (table) graph
 function SccDfsSearch:new(G)
-  return getmetatable(SccDfsSearch):new(G, nil, _iterate)
+  return getmetatable(SccDfsSearch):new(G, _iterate)
 end
 
 return SccDfsSearch

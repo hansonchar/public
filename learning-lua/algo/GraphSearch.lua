@@ -13,11 +13,13 @@ local function _yield(entry)
 end
 
 ---@param src (any) optional source vertex; this takes precedence.
-function GraphSearch:iterate(src)
+---@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.  (Currently only DFS supports this parameter.)
+function GraphSearch:iterate(src, is_include_visited)
+  assert(not src or self.graph:vertex(src), "Source vertex not found in graph")
   self._visited_count = 0
   -- self._nav = build_navigation(self)
   return coroutine.wrap(function()
-    self:_iterate(src)
+    self:_iterate(src, is_include_visited)
   end)
 end
 
@@ -34,18 +36,14 @@ function GraphSearch:class(o)
 end
 
 ---@param G (table) graph
----@param src (any) source vertex (optional)
 ---@param func_iterate (function) function for iteration
 ---@param nav_spec (table) optional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
 ---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if 'src' is not specified
-function GraphSearch:new(G, src, func_iterate, nav_spec, src_spec)
+function GraphSearch:new(G, func_iterate, nav_spec, src_spec)
   assert(G, "Missing Graph")
   assert(Graph.isGraph(G), "G must be a graph object")
-  -- assert(src, "Missing source vertex")
-  assert(not src or G:vertex(src), "Source vertex not found in graph")
   local o = GraphSearch:class{
-    graph = G,
-    src_vertex = src
+    graph = G
   }
   o._iterate = func_iterate
   o._nav_spec = nav_spec or E

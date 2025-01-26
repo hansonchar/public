@@ -14,8 +14,8 @@ local function basic_tests()
   G:add('v', 't', 6)
   G:add('w', 't', 3)
 
-  local search = ShortestPathSearch:new(G, 's')
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate('s') do
     debug(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
   end
 
@@ -43,8 +43,8 @@ local function tim_test()
   local src<const> = 's'
   local G = load_input(input)
   local level_counts = {}
-  local search = ShortestPathSearch:new(G, src)
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate(src) do
     level_counts[level] = level_counts[level] or 0
     level_counts[level] = level_counts[level] + 1
     -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
@@ -73,8 +73,8 @@ local function geek_test()
   local src<const> = '0'
   local G = load_input(input)
   local level_counts = {}
-  local search = ShortestPathSearch:new(G, src)
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate(src) do
     level_counts[level] = level_counts[level] or 0
     level_counts[level] = level_counts[level] + 1
     -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
@@ -122,8 +122,8 @@ local function redblobgames_test()
 
   local G = load_input(input)
   local level_counts = {}
-  local search = ShortestPathSearch:new(G, src)
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate(src) do
     level_counts[level] = level_counts[level] or 0
     level_counts[level] = level_counts[level] + 1
     -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
@@ -159,8 +159,8 @@ local function algodaily_test()
 
   local G = load_input(input)
   local level_counts = {}
-  local search = ShortestPathSearch:new(G, src)
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate(src) do
     level_counts[level] = level_counts[level] or 0
     level_counts[level] = level_counts[level] + 1
     -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
@@ -199,8 +199,8 @@ local function scott_moura_test()
 
   local G = load_input(input)
   local level_counts = {}
-  local search = ShortestPathSearch:new(G, src)
-  for from, to, weight, level, min_cost in search:iterate() do
+  local search = ShortestPathSearch:new(G)
+  for from, to, weight, level, min_cost in search:iterate(src) do
     level_counts[level] = level_counts[level] or 0
     level_counts[level] = level_counts[level] + 1
     -- print(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
@@ -241,8 +241,8 @@ local function negative_tests()
   print("ShortestPathSearch negative_tests...")
   local G = Graph:new()
   G:add('s', 'v', -1)
-  local search = ShortestPathSearch:new(G, 's')
-  local iterator = search:iterate()
+  local search = ShortestPathSearch:new(G)
+  local iterator = search:iterate('s')
   local ok, errmsg = pcall(iterator, search)
   assert(not ok)
   assert(string.match(errmsg, "Weight must not be negative$"))

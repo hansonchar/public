@@ -6,38 +6,6 @@ local E = {}
 
 local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, COST_SO_FAR<const> = 1, 2, 3, 4, 5
 
--- Uses Dijkstra's algorithm
-local function _iterate(self)
-  local G, s, sssp = self.graph, self.src_vertex, self.sssp
-  local heap = BinaryHeap:new({}, function(a, b)
-    local a, b = a[TO], b[TO]
-    return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
-  end)
-  local depth = 0
-  local node = self.src_vertex
-  repeat
-    sssp.vertices[node].ref = nil -- nullify from's heap reference as from is no longer on the heap
-    local vertex = self.graph:vertex(node)
-    depth = depth + 1
-    for to, weight in vertex:outgoings() do
-      assert(weight >= 0, "Weight must not be negative")
-      local v_info, v_cost_so_far = sssp.vertices[to], sssp.vertices[node].min_cost + weight
-      if v_cost_so_far < v_info.min_cost then
-        v_info.min_cost = v_cost_so_far
-        v_info.from = node
-        local v_ref = v_info.ref
-        if v_ref then
-          local entry = heap:remove(v_ref.pos)
-          assert(entry[TO] == to, string.format("removed: %s, to: %s", entry[TO], to)) -- remove from heap if necessary before adding
-        end
-        v_info.ref = heap:add{node, to, weight, depth, v_cost_so_far}
-      end
-    end
-    local item = self._yield(heap:remove())
-    node, depth = item[TO], item[DEPTH]
-  until not node -- note a cyclical path would lead to infinite iteration
-end
-
 local function shortest_path_of(sssp, dst)
   local path = {assert(dst)}
   local from = sssp.vertices[dst].from
@@ -80,6 +48,39 @@ local function new_sssp(s)
   return sssp
 end
 
+-- Uses Dijkstra's algorithm
+local function _iterate(self, src)
+  self.sssp = new_sssp(src)
+  local G, sssp = self.graph, self.sssp
+  local heap = BinaryHeap:new({}, function(a, b)
+    local a, b = a[TO], b[TO]
+    return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
+  end)
+  local depth = 0
+  local node = src
+  repeat
+    sssp.vertices[node].ref = nil -- nullify from's heap reference as from is no longer on the heap
+    local vertex = self.graph:vertex(node)
+    depth = depth + 1
+    for to, weight in vertex:outgoings() do
+      assert(weight >= 0, "Weight must not be negative")
+      local v_info, v_cost_so_far = sssp.vertices[to], sssp.vertices[node].min_cost + weight
+      if v_cost_so_far < v_info.min_cost then
+        v_info.min_cost = v_cost_so_far
+        v_info.from = node
+        local v_ref = v_info.ref
+        if v_ref then
+          local entry = heap:remove(v_ref.pos)
+          assert(entry[TO] == to, string.format("removed: %s, to: %s", entry[TO], to)) -- remove from heap if necessary before adding
+        end
+        v_info.ref = heap:add{node, to, weight, depth, v_cost_so_far}
+      end
+    end
+    local item = self._yield(heap:remove())
+    node, depth = item[TO], item[DEPTH]
+  until not node -- note a cyclical path would lead to infinite iteration
+end
+
 --- ShortestPathSearch.lua enables graph traveral using an iterator
 --- (while following the Dijkstra’s graph search strategy).
 --- Notes:
@@ -93,9 +94,8 @@ end
 --- * No full computation on the entire graph necessary a priori.
 ---@param G (table) graph
 ---@param src (any) source vertex
-function ShortestPathSearch:new(G, src)
-  local o = getmetatable(self):new(G, src, _iterate)
-  o.sssp = new_sssp(src)
+function ShortestPathSearch:new(G)
+  local o = getmetatable(self):new(G, _iterate)
   o.shortest_paths = function(self)
     return self.sssp
   end

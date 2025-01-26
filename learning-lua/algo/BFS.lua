@@ -6,13 +6,13 @@ local E = {}
 
 local TO<const>, LEVEL<const> = 2, 4
 
-local function _iterate(self)
+local function _iterate(self, src)
   local q, visited = Queue:new(), {
-    [self.src_vertex] = true
+    [src] = true
   }
   self._visited_count = 1
   local level = 0
-  local from = self.src_vertex
+  local from = src
   repeat
     local vertex = self.graph:vertex(from)
     level = level + 1
@@ -31,9 +31,8 @@ local function _iterate(self)
 end
 
 ---@param G (table) graph
----@param src (any) source vertex
-function BFS:new(G, src, func_iterate)
-  return getmetatable(self):new(G, src, _iterate)
+function BFS:new(G, func_iterate)
+  return getmetatable(self):new(G, _iterate)
 end
 
 return BFS

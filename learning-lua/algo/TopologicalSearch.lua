@@ -17,7 +17,7 @@ local function _iterate(self, src)
   if src then
     stack:push(src)
   end
-  for from, to in DFS:new(self.graph, src, nav_spec, src_spec):iterate() do
+  for from, to in DFS:new(self.graph, nav_spec, src_spec):iterate(src) do
     if not src then -- This condition can be true at most once at the beginning of a topo search.
       debug(string.format("Topo search starting from %s", from))
       src = from
@@ -55,7 +55,7 @@ end
 ---@param nav_spec (table) optional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
 ---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if a single source vertex is not specified
 function TopologicalSearch:new(G, nav_spec, src_spec)
-  return getmetatable(self):new(G, nil, _iterate, nav_spec, src_spec)
+  return getmetatable(self):new(G, _iterate, nav_spec, src_spec)
 end
 
 return TopologicalSearch

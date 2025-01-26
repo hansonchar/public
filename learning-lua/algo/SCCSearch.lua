@@ -52,7 +52,7 @@ end
 
 ---@param G (table) graph
 function SCCSearch:new(G)
-  return getmetatable(self):new(G, nil, _iterate)
+  return getmetatable(self):new(G, _iterate)
 end
 
 return SCCSearch

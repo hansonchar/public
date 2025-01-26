@@ -12,8 +12,8 @@ end
 
 local function bfs_test(input, src, expected_visits, expected_max_level)
   local G = load_input(input)
-  local bfs, count, prev_level = BFS:new(G, src), 1, 0
-  for from, to, weight, level in bfs:iterate() do
+  local bfs, count, prev_level = BFS:new(G), 1, 0
+  for from, to, weight, level in bfs:iterate(src) do
     count = count + 1
     assert(prev_level <= level)
     prev_level = level

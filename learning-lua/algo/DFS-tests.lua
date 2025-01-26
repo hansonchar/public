@@ -14,8 +14,8 @@ end
 
 local function dfs_test(input, src, expected_visits, expected_max_level)
   local G = load_edges(input)
-  local dfs, count, max_level = DFS:new(G, src), 1, 0
-  for from, to, weight, level in dfs:iterate() do
+  local dfs, count, max_level = DFS:new(G), 1, 0
+  for from, to, weight, level in dfs:iterate(src) do
     count = count + 1
     max_level = level > max_level and level or max_level
     -- print(string.format("%d: %s-%s=%d", level, from, to, weight))
@@ -31,9 +31,9 @@ local function topo_sort(input, src)
   local terminal -- the terminal node
   local level_visits = {}
   local G = load_edges(input)
-  local dfs = DFS:new(G, src)
+  local dfs = DFS:new(G)
   -- outgoings is the number of unvisited outgoing edges
-  for from, to, _, depth, outgoings in dfs:iterate() do
+  for from, to, _, depth, outgoings in dfs:iterate(src) do
     -- print(string.format("%d: %s-%s", level, from, to))
     if not terminal and outgoings == 0 then
       terminal = to
@@ -107,9 +107,9 @@ local function single_vertex_test()
   print("Testing single vertex ...")
   local G = Graph:new()
   G:add('a')
-  local dfs = DFS:new(G, 'a')
+  local dfs = DFS:new(G)
   local count = 0
-  for from, to, weight, depth in dfs:iterate() do
+  for from, to, weight, depth in dfs:iterate('a') do
     count = count + 1
     assert(from == 'a')
     assert(not to)

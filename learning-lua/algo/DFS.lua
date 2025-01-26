@@ -4,8 +4,8 @@ local Stack = require "algo.Stack"
 local DFS = GraphSearch:class()
 local E = {}
 
--- Element index of a stack entry with the format: {from, to, weight, depth, count_unvisited, begin_vertex}
-local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, UNVISITED<const>, BEGIN_VERTEX<const> = 1, 2, 3, 4, 5, 6
+-- Element index of a stack entry with the format: {from, to, weight, depth, count_unvisited, begin_vertex, is_visited}
+local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, UNVISITED<const>, BEGIN_VERTEX<const>, IS_VISITED<const> = 1, 2, 3, 4, 5, 6, 7
 
 local function debug(...)
   -- print(...)
@@ -60,7 +60,9 @@ local function vertices_of(G)
   return vertices
 end
 
-local function _iterate(self)
+---@param src (any) optional source vertex; this takes precedence.
+---@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.
+local function _iterate(self, src, is_include_visited)
   local stack, visited = Stack:new(), {}
   -- Applicable only if a single source is not specified for this DFS.
   -- If a single source is specified, the DFS will only be performed from that source vertex.
@@ -68,7 +70,7 @@ local function _iterate(self)
   local unvisited_vertices -- Contains vertices that have not been visited; visited ones are erased.
   local src_spec_idx = 0
   self._visited_count = 0
-  local node = self.src_vertex -- DFS from a single source vertex
+  local node = src -- DFS from a single source vertex
   if not node then -- DFS from potentially many source vertices
     unvisited_vertices = vertices_of(self.graph)
     local next_unvisited = next(unvisited_vertices) -- we are done if all vertices have been visited.
@@ -132,11 +134,10 @@ local function _iterate(self)
 end
 
 ---@param G (table) graph
----@param src (any) source vertex
 ---@param nav_spec (table) opional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
 ---@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if 'src' is not specified
-function DFS:new(G, src, nav_spec, src_spec)
-  return getmetatable(self):new(G, src, _iterate, nav_spec, src_spec)
+function DFS:new(G, nav_spec, src_spec)
+  return getmetatable(self):new(G, _iterate, nav_spec, src_spec)
 end
 
 return DFS
