@@ -11,10 +11,14 @@ function Queue:new()
 end
 
 function Queue:enqueue(...)
+  local count = 0
   for _, item in ipairs({...}) do
+    assert(item, "nil not allowed")
+    count = count + 1
     self[self.next] = item
     self.next = self.next + 1
   end
+  assert(count > 0, "empty enqueue not allowed")
 end
 
 function Queue:dequeue()

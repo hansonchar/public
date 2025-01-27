@@ -108,7 +108,7 @@ function Graph:empty()
   return not next(self)
 end
 
----@param v (string)
+---@param v (any)
 function Graph:vertex(v)
   return self[v]
 end

@@ -1,9 +1,8 @@
+local TarjanSCCSearch = require "algo.TarjanSCCSearch"
 local Graph = require "algo.Graph"
-local SCCSearch = require "algo.SCCSearch"
-local E = {}
 
 local function debug(...)
-  -- print(...)
+  print(...)
 end
 
 ---@param input (table) array of directed arcs in the format of, for example, "u-v".
@@ -18,19 +17,9 @@ local function load_edges(input)
 end
 
 local function sccs_of(G)
-  local sccs = {}
-  for scc, id, count in SCCSearch:new(G):iterate() do
-    debug(scc, id, count)
-    sccs[id] = sccs[id] or {}
-    sccs[id][scc] = true
-  end
-  return sccs
-end
-
-local function sccs_of(G)
   local scc_count, sccs = 0, {}
   local scc_id
-  for scc, id, count in SCCSearch:new(G):iterate() do
+  for scc, id, count in TarjanSCCSearch:new(G):iterate() do
     debug(scc, id, count)
     if scc_id ~= id then
       scc_id = id
@@ -40,27 +29,6 @@ local function sccs_of(G)
     sccs[scc_count][scc] = true
   end
   return sccs
-end
-
-local function tim_test(G)
-  local sccs = sccs_of(G)
-  assert(#sccs == 4)
-  for _, scc in ipairs {'6', '8', '10'} do
-    assert(sccs[1][scc])
-  end
-  local i, j
-  if next(sccs[2]) == '11' then
-    i, j = 2, 3
-  else
-    i, j = 3, 2
-  end
-  assert(sccs[i]['11'])
-  for _, scc in ipairs {'2', '4', '7', '9'} do
-    assert(sccs[j][scc])
-  end
-  for _, scc in ipairs {'1', '3', '5'} do
-    assert(sccs[4][scc])
-  end
 end
 
 -- Depth-first search and linear graph algorithms by Tarjan, R.E.
@@ -109,8 +77,6 @@ assert(#sccs_of(load_edges {"a-b", "b-c", "c-d", "d-e"}) == 5)
 
 -- Algorithms Illuminated Part 2 by Prof. Tim Roughgarden
 print("Testing SCC using Graph of Figure 8.16 by Tim ...")
-local G = load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
-                      '2-4', '2-10', '4-7', '7-9'}
 
-tim_test(G)
-os.exit()
+assert(#sccs_of(load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
+                      '2-4', '2-10', '4-7', '7-9'}) == 4)

@@ -75,6 +75,7 @@ end
 ---@param x any the value to be added to the heap
 ---@return (table) a reference to the entry added
 function BinaryHeap:add(x)
+  assert(x, "nil not allowed")
   local a = self
   local pos = #a + 1
   local entry = {

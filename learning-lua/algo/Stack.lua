@@ -8,9 +8,13 @@ function Stack:new()
 end
 
 function Stack:push(...)
+  local count = 0
   for _, item in ipairs({...}) do
+    assert(item, "nil not allowed")
+    count = count + 1
     self[#self + 1] = item
   end
+  assert(count > 0, "empty push not allowed")
 end
 
 function Stack:pop()
