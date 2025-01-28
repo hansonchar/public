@@ -1,4 +1,4 @@
-local TarjanSCCSearch = require "algo.TarjanSCCSearch"
+local TarjanNorecur = require "algo.TarjanNorecur"
 local Graph = require "algo.Graph"
 
 local function debug(...)
@@ -19,7 +19,7 @@ end
 local function sccs_of(G)
   local scc_count, sccs = 0, {}
   local scc_id
-  for scc, id, count in TarjanSCCSearch:new(G):iterate() do
+  for scc, id, count in TarjanNorecur:new(G):iterate() do
     debug(scc, id, count)
     if scc_id ~= id then
       scc_id = id
@@ -78,5 +78,5 @@ assert(#sccs_of(load_edges {"a-b", "b-c", "c-d", "d-e"}) == 5)
 -- Algorithms Illuminated Part 2 by Prof. Tim Roughgarden
 print("Testing SCC using Graph of Figure 8.16 by Tim ...")
 
-assert(#sccs_of(load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
-                      '2-4', '2-10', '4-7', '7-9'}) == 4)
+assert(#sccs_of(load_edges {'1-3', '2-4', '2-10', '3-5', '3-11', '4-7', '5-1', '5-7', '5-9', '6-10', '7-9', '8-6',
+                            '9-2', '9-4', '9-8', '10-8', '11-6', '11-8'}) == 4)
