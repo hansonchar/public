@@ -33,9 +33,9 @@ end
 function Graph:is_arc(from, to)
   local xtra_info = getmetatable(self)
   if xtra_info._is_transposed then
-    return (self[from].ingress or E)[to]
+    return ((self[from] or E).ingress or E)[to]
   else
-    return self[from].egress[to]
+    return ((self[from] or E).egress or E)[to]
   end
 end
 
