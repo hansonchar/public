@@ -20,7 +20,7 @@ end
 ---@param stack (table) the stack to push edges to
 ---@param visited_hist (table) used to check if a node has been visited
 ---@param is_include_visited (boolean) true to include the edges already visited.
---- In other words, the edges called "fronds" are also returned.
+--- These visited edges are called "fronds".
 --- (See Depth-First Search and Linear Graph Algorithms by Robert Tarjan.)
 ---@return (number) the number of unvisited outgoing edges pushed to the stack
 ---@return (number) the number of stack pushes
@@ -80,8 +80,13 @@ local function vertices_of(G)
     return vertices
 end
 
----@param src (any) optional source vertex. If specified, DFS will only be performed from this source vertex (ie. not necessarily exploring all nodes in the graph.).  Otherwise, DFS will be performed on the entire graph exploring all nodes.
----@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.  This can be useful in special circumstances, such as implementing the Tarjan's SCC algorithm.
+---@param src (any) optional source vertex. If specified, DFS will only be performed
+---from this source vertex (ie. not necessarily exploring all nodes in the graph.).
+---Otherwise, DFS will be performed on the entire graph exploring all nodes.
+---@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.
+---The visited edges are called "fronds".
+---(See Depth-First Search and Linear Graph Algorithms by Robert Tarjan.)
+---This can be useful in special circumstances, such as implementing the Tarjan's SCC algorithm.
 local function _iterate(self, src, is_include_visited)
     local stack, visited_hist = Stack:new(), {}
     -- Applicable only if a single source (ie the 'src' parameter) is not specified for this DFS.
@@ -116,21 +121,23 @@ local function _iterate(self, src, is_include_visited)
                 entry[IS_VISITED] = true
                 self._yield(entry)
             end
-        else
+        else -- first time visiting this node
             visited_hist[node], self._visited_count = true, self._visited_count + 1
             (unvisited_vertices or E)[node] = nil
-            local vertex = self.graph:vertex(node)
             depth = depth + 1
             local count_unvisited, push_count = push_edges(self, node, depth, stack, visited_hist, is_include_visited)
-            if entry then                                        -- t is nil only during the first iteration when we are starting with the source node.
-                entry[UNVISITED] = count_unvisited               -- number of unvisited outgoing edges.
-                entry[BEGIN_VERTEX] = begin_vertex               -- the source vertex of the DFS.
+            -- 'entry' is nil only during the first iteration when we are starting with the source node.
+            if entry then
+                entry[UNVISITED] = count_unvisited -- number of unvisited outgoing edges.
+                entry[BEGIN_VERTEX] = begin_vertex -- the source vertex of the DFS.
                 self._yield(entry)
-            elseif push_count == 0 and node == begin_vertex then -- the starting node is the only node with unvisited edges.
+            elseif push_count == 0 then            -- the source node has no outgoing edges
+                assert(node == begin_vertex)
                 visited_hist[node], self._visited_count = true, self._visited_count + 1
                 (unvisited_vertices or E)[node] = nil
                 -- format: {from, to, weight, depth, count_unvisited, begin_vertex}
-                self._yield { node, nil, nil, 0, 0, begin_vertex } -- yield it anyway so we don't loose a vertex during DFS
+                -- yield the single node anyway so we don't loose a vertex during DFS.
+                self._yield { node, nil, nil, 0, 0, begin_vertex }
             end
         end
         entry = (stack:pop() or E)
@@ -149,8 +156,8 @@ local function _iterate(self, src, is_include_visited)
         if next_unvisited then
             local src_spec = self._src_spec
             src_spec_idx = src_spec_idx + 1
-            node = src_spec
-                [src_spec_idx]                             -- give preference to the specified sequence of source vertices.
+            -- give preference to the specified sequence of source vertices.
+            node = src_spec[src_spec_idx]
             while node and not unvisited_vertices[node] do -- skip those vertices we have visited.
                 src_spec_idx = src_spec_idx + 1
                 node = src_spec[src_spec_idx]
