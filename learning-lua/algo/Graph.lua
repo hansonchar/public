@@ -39,17 +39,29 @@ function Graph:is_arc(from, to)
   end
 end
 
+--- Remove the specified edge from this graph.
+---@param from (any) the from node of the edge
+---@param to (any) the to node of the edge
+function Graph:remove_edge(from, to)
+  local egress = self[from].egress or E
+  local ingress = self[to].ingress or E
+  egress[to] = nil
+  ingress[from] = nil
+end
+
 --- Remove the specified node from this graph.
 --- Note this method requires Graph:build_ingress() to have been invoked.
 ---@param node (any) the specified node to be removed
 function Graph:remove(node)
   local egress = self[node].egress or E
-  local ingress = self[node].ingress or E
-  for v in pairs(egress) do
-    self[v].ingress[node] = nil
-  end
-  for v in pairs(ingress) do
-    self[v].egress[node] = nil
+  local ingress = self[node].ingress
+  if ingress then
+    for v in pairs(egress) do
+      self[v].ingress[node] = nil
+    end
+    for v in pairs(ingress) do
+      self[v].egress[node] = nil
+    end
   end
   self[node] = nil
 end
