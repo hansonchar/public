@@ -43,14 +43,14 @@ local function _iterate(self)
   for from, to, _, _, _, src_vertex in dfs:iterate() do
     debug(string.format("from=%s to=%s, src_vertex=%s", from, to, src_vertex))
     if scc_src_vertex == src_vertex then -- During a DFS, but not at the first (re-)starting node.
-      count = count + 1 -- We only need to yield 'to' because the 'from' must be the same
+      count = count + 1                  -- We only need to yield 'to' because the 'from' must be the same
       coroutine.yield(to, scc_id, count) -- as the previous 'to' which has already been yielded.
-    else -- DFS starting (ore retrying) at a new sourre node.
-      assert(from == src_vertex) -- The algoritm applied here implies a new SCC.
-      scc_id, count = scc_id + 1, 1 -- So we want to yield both the 'from', and 'to' if any.
+    else                                 -- DFS starting (ore retrying) at a new sourre node.
+      assert(from == src_vertex)         -- The algoritm applied here implies a new SCC.
+      scc_id, count = scc_id + 1, 1      -- So we want to yield both the 'from', and 'to' if any.
       coroutine.yield(from, scc_id, count)
-      scc_src_vertex = src_vertex -- src_vertex is the starting vertex of a DFS or a DFS retry.
-      if to then -- If 'to' is nil, then the SCC must be a singular node.
+      scc_src_vertex = src_vertex        -- src_vertex is the starting vertex of a DFS or a DFS retry.
+      if to then                         -- If 'to' is nil, then the SCC must be a singular node.
         count = count + 1
         coroutine.yield(to, scc_id, count)
       end

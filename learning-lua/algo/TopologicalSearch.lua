@@ -28,16 +28,16 @@ local function _iterate(self, src)
       local node = stack:pop()
       if node then
         coroutine.yield(node, stack:empty())
-      else -- Started from a different vertex.  This else condition is only possible if
+      else                    -- Started from a different vertex.  This else condition is only possible if
         assert(not param_src) -- the 'src' parameter is not specified.
         debug(string.format("Topo search re-starting from %s", from))
         stack:push(from)
       end
-    end -- end while.
-    if to then -- 'to' can be nil if 'from' is a lone starting vertex.
+    end              -- end while.
+    if to then       -- 'to' can be nil if 'from' is a lone starting vertex.
       stack:push(to) -- This 'to' would be the same as the next 'from' returned from the
-    end -- DFS if 'to' has any unexplored outgoing edges.
-  end -- end for.
+    end              -- DFS if 'to' has any unexplored outgoing edges.
+  end                -- end for.
   -- At this point, the DFS has finished.
   -- Everything left on the stack are yielded in descending topological order.
   local empty = stack:empty()
@@ -52,8 +52,10 @@ end
 --- of its vertices such that for every directed edge (u,v) from vertex u to vertex v,
 --- u comes before v in the ordering.
 ---@param G (table) graph
----@param nav_spec (table) optional navigation spec in the format of {from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
----@param src_spec (table) optional source vertex spec in the format of {v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if a single source vertex is not specified
+---@param nav_spec (table?) optional navigation spec in the format of
+---{from_1={to_1, to_2, ...}, ...} e.g. {['3']={'5','11'}, ['5']={'7','9'}}
+---@param src_spec (table?) optional source vertex spec in the format of
+---{v1, v2, ...} e.g. {'1', '2', '3', ...}; applicable only if a single source vertex is not specified
 function TopologicalSearch:new(G, nav_spec, src_spec)
   return getmetatable(self):new(G, _iterate, nav_spec, src_spec)
 end

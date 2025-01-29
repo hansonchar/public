@@ -69,10 +69,11 @@ end
 --- Adds a vertex u and optionally a weighted directional edge from u to v.
 --- (FEATURE): Calling this method after Graph:build_ingress() would lead to undefined behavior.
 ---@param u (string) vertex from
----@param v (string) vertex to (optional)
----@param weight (number) weight of u-v
+---@param v (string?) vertex to (optional)
+---@param weight (number?) weight of u-v
 function Graph:add(u, v, weight)
-  assert(not self:is_ingress_built(), "Currently calling this method after Graph:build_ingress() would lead to undefined behavior.")
+  assert(not self:is_ingress_built(),
+    "Currently calling this method after Graph:build_ingress() would lead to undefined behavior.")
   weight = weight or 1
   if not self[u] then
     self[u] = setmetatable({
@@ -127,7 +128,7 @@ end
 
 ---@param u (string)
 ---@param vertex_u (table)
----@param tostring_f (function) apply this function to u for display purposes
+---@param tostring_f (function?) apply this function to u for display purposes
 ---@return (table) an array of all the outgoing edges of u for debugging purposes
 local function outgoing_str_of(u, vertex_u, tostring_f)
   local a = {}
@@ -139,9 +140,11 @@ local function outgoing_str_of(u, vertex_u, tostring_f)
   return a
 end
 
----@param u (string) vertex u or nil for all vertices
----@param tostring_f (function) apply this function to u for display purposes
----@return (string), (number) a string of all the outgoing edges (of either vertex u if specified or of all vertices otherwise) for debugging purposes, and a count of the edges.
+---@param u (string?) vertex u or nil for all vertices
+---@param tostring_f (function?) apply this function to u for display purposes
+---@return (string) a string of all the outgoing edges (of either vertex u if specified or of all vertices otherwise)
+---for debugging purposes.
+---@return (number) a count of the edges.
 function Graph:outgoing_str(u, tostring_f)
   local a = {}
   if u then

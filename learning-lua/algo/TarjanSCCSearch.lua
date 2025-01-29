@@ -44,6 +44,9 @@ local function strongconnect(v, index, stack, G, info)
 end
 
 -- https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+--
+-- Depth-First Search and Linear Graph Algorithms by Robert Tarjan:
+-- https://github.com/tpn/pdfs/blob/master/Depth-First%20Search%20and%20Linear%20Graph%20Algorithms%20-%20Tarjan%20(1972).pdf
 local function _iterate(self)
   local info = {}
   local G = self.graph

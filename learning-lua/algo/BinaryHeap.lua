@@ -9,17 +9,17 @@ end
 
 --- Maintain the heap invariant by repeatedly swapping with the parent if necessary.
 ---@param self (table) the binary heap
----@param i (number) the starting position; default to the last element.
+---@param i (number?) the starting position; default to the last element.
 local function bubble_up(self, i)
   i = i or #self
   local a, comp = self, self.comp
   while i > 1 do
-    local p = i >> 1 -- parent
+    local p = i >> 1                 -- parent
     if comp(a[p].val, a[i].val) then -- value stored at index i is not smaller than that of its parent
       return
     end
     swap(a, i, p) -- swap with parent
-    i = p -- repeatedly
+    i = p         -- repeatedly
   end
 end
 
@@ -106,7 +106,7 @@ end
 
 function BinaryHeap:class(t, comp)
   t = t or {}
-  local mt = { -- used to store the heap instance specific comparision function
+  local mt = {                    -- used to store the heap instance specific comparision function
     comp = comp or function(a, b) -- default to min heap
       return a <= b
     end
@@ -169,6 +169,7 @@ function BinaryHeap:verify() -- debugging: verify the heap invariant holds
     assert(comp(a[i].val, a[child].val))
   end
 end
+
 return BinaryHeap
 
 -- Interesting:

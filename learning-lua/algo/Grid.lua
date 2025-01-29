@@ -10,7 +10,7 @@ end
 --- within the grid; or nil if (y, x) is outside the grid.
 ---@param y (number)
 ---@param x (number)
----@return (number) or nil
+---@return (number?)
 function Grid:node(y, x)
   if y <= self.height and x <= self.width then
     return (y << self._intern.wbits) + x

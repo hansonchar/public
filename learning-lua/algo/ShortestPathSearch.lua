@@ -4,10 +4,10 @@ local GraphSearch = require "algo.GraphSearch"
 local ShortestPathSearch = GraphSearch:class()
 local E = {}
 
-local FROM<const>, TO<const>, WEIGHT<const>, DEPTH<const>, COST_SO_FAR<const> = 1, 2, 3, 4, 5
+local FROM <const>, TO <const>, WEIGHT <const>, DEPTH <const>, COST_SO_FAR <const> = 1, 2, 3, 4, 5
 
 local function shortest_path_of(sssp, dst)
-  local path = {assert(dst)}
+  local path = { assert(dst) }
   local from = sssp.vertices[dst].from
   while from and from ~= dst do
     path[#path + 1] = from
@@ -73,7 +73,7 @@ local function _iterate(self, src)
           local entry = heap:remove(v_ref.pos)
           assert(entry[TO] == to, string.format("removed: %s, to: %s", entry[TO], to)) -- remove from heap if necessary before adding
         end
-        v_info.ref = heap:add{node, to, weight, depth, v_cost_so_far}
+        v_info.ref = heap:add { node, to, weight, depth, v_cost_so_far }
       end
     end
     local item = self._yield(heap:remove())
@@ -93,7 +93,6 @@ end
 ---   shortest possible distances from the source node, in an incremental manner.
 --- * No full computation on the entire graph necessary a priori.
 ---@param G (table) graph
----@param src (any) source vertex
 function ShortestPathSearch:new(G)
   local o = getmetatable(self):new(G, _iterate)
   o.shortest_paths = function(self)

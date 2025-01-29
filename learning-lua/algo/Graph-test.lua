@@ -32,10 +32,10 @@ local function basic_tests()
   setmetatable(x, x)
   assert(not Graph.isGraph(x)) -- self reference metatable
 
-  assert(Graph.isGraph(G)) -- the metatable of G is Graph
+  assert(Graph.isGraph(G))     -- the metatable of G is Graph
   assert(not Graph.isGraph {}) -- no metatable
 
-  local child = G:new() -- the metatable of the metatable of child is Graph
+  local child = G:new()        -- the metatable of the metatable of child is Graph
   assert(Graph.isGraph(child))
 
   assert(not Graph.isGraph(1))
@@ -46,9 +46,9 @@ end
 
 local function test_build_ingress()
   print("test_build_ingress ... ")
-  local input<const> = {'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
-                        'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2'}
-  local source<const> = 'A'
+  local input <const> = { 'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
+    'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2' }
+  local source <const> = 'A'
   local G = load_input(input)
   G:build_ingress()
   local incoming, count_i = G:incoming_str()
@@ -62,9 +62,9 @@ end
 
 local function test_transpose()
   print("test_transpose ... ")
-  local input<const> = {'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
-                        'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2'}
-  local source<const> = 'A'
+  local input <const> = { 'A-B=2', 'A-C=4', 'A-D=4', 'B-F=6', 'C-F=5', 'C-E=7', 'C-D=1', 'D-E=5', 'D-H=11', 'E-G=3',
+    'E-H=4', 'F-H=5', 'F-G=2', 'F-E=1', 'G-H=2' }
+  local source <const> = 'A'
   local G = load_input(input)
   G:build_ingress()
   assert(not G:is_transposed())

@@ -43,7 +43,7 @@ local function topo_sort(input, src)
       visits[#visits + 1] = to
     end
   end
-  local a = {src}
+  local a = { src }
   for _, visits in ipairs(level_visits) do
     for i = #visits, 1, -1 do
       a[#a + 1] = visits[i]
@@ -141,41 +141,41 @@ single_vertex_test()
 no_edges_test()
 
 print("Testing topo sort from Tim ...")
-local edges = {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4', '2-4',
-               '2-10', '4-7', '7-9'}
+local edges = { '1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4', '2-4',
+  '2-10', '4-7', '7-9' }
 local a = topo_sort(edges, '1')
 print(table.concat(a, "-"))
 
 -- Algorithms Illuminated Part 2 by Prof. Tim Roughgarden
-local g = {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
+local g = { 's-v', 's-w', 'v-w', 'v-t', 'w-t' }
 dfs_test(g, 's', 4, 2)
 verify_tim_order(topo_sort(g, 's'))
 -- os.exit()
 
 -- https://ecal.studentorg.berkeley.edu/files/ce191/CH05-DynamicProgramming.pdf by Prof. Scott Moura
-local g = {'A-B', 'A-C', 'A-D', 'B-F', 'C-F', 'C-E', 'C-D', 'D-E', 'D-H', 'E-G', 'E-H', 'F-H', 'F-G', 'F-E', 'G-H'}
+local g = { 'A-B', 'A-C', 'A-D', 'B-F', 'C-F', 'C-E', 'C-D', 'D-E', 'D-H', 'E-G', 'E-H', 'F-H', 'F-G', 'F-E', 'G-H' }
 dfs_test(g, 'A', 8, 5)
 verify_scott_order(topo_sort(g, 'A'))
 
-local g = {'a-b', 'a-c', 'a-d', 'd-e'}
+local g = { 'a-b', 'a-c', 'a-d', 'd-e' }
 dfs_test(g, 'a', 5, 2)
 verify_star_order(topo_sort(g, 'a'))
 
 -- https://en.wikipedia.org/wiki/Topological_sorting
-local g = {'0-5', '0-7', '0-3', '5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10'}
+local g = { '0-5', '0-7', '0-3', '5-11', '7-11', '7-8', '11-2', '11-9', '11-10', '8-9', '3-8', '3-10' }
 dfs_test(g, '0', 9, 3)
 verify_wiki_order(topo_sort(g, '0'))
 
 os.exit()
 
 -- Some demo on when 'is_include_visited' is set to true.
-local G = load_edges {'s-v', 's-w', 'v-w', 'v-t', 'w-t'}
+local G = load_edges { 's-v', 's-w', 'v-w', 'v-t', 'w-t' }
 for from, to, _weight, depth, _unvisited_cnt, _begin_vertex, is_visited in DFS:new(G):iterate('s', true) do
   print(string.format("%d: %s-%s (visited:%s)", depth, from, to, is_visited))
 end
 print()
-local G = load_edges {'1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
-                      '2-4', '2-10', '4-7', '7-9'}
+local G = load_edges { '1-3', '3-5', '5-1', '3-11', '5-9', '5-7', '11-6', '11-8', '8-6', '6-10', '10-8', '9-2', '9-4',
+  '2-4', '2-10', '4-7', '7-9' }
 for from, to, _weight, depth, _unvisited_cnt, _begin_vertex, is_visited in DFS:new(G):iterate('1', true) do
   print(string.format("%d: %s-%s (visited:%s)", depth, from, to, is_visited))
 end

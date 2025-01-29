@@ -2,7 +2,8 @@ local Grid = require "algo.Grid"
 local GridNavigator = {}
 
 -- Navigates to the next position on the grid.
----@return (any) (number) the next value and node on the grid; or nil if out of bound.
+---@return (any?) val the next value on the grid; or nil if out of bound.
+---@return (number?) node the next node on the grid; or nil if out of bound.
 function GridNavigator:next()
   self.prev_node = self.curr_node
   self.curr_node = self.dir_func(self.grid, self.curr_node, 1)
@@ -24,7 +25,7 @@ function GridNavigator:turn(degree)
   degree = degree > 0 and degree or 360 + degree
   assert(degree == 90 or degree == 180 or degree == 270)
   local grid = self.grid
-  local func_ds = {grid.north, grid.east, grid.south, grid.west}
+  local func_ds = { grid.north, grid.east, grid.south, grid.west }
   local dir_func = self.dir_func
   local idx
   for i, f in ipairs(func_ds) do
