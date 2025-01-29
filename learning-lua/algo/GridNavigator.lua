@@ -25,7 +25,7 @@ function GridNavigator:turn(degree)
   degree = degree > 0 and degree or 360 + degree
   assert(degree == 90 or degree == 180 or degree == 270)
   local grid = self.grid
-  local func_ds = { grid.north, grid.east, grid.south, grid.west }
+  local func_ds = {grid.north, grid.east, grid.south, grid.west}
   local dir_func = self.dir_func
   local idx
   for i, f in ipairs(func_ds) do

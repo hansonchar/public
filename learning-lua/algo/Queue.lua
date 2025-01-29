@@ -43,7 +43,7 @@ end
 
 function Queue:clear()
   local i = self.last
-  local j<const> = self.next
+  local j <const> = self.next
   while i < j do
     self[i] = nil
     i = i + 1

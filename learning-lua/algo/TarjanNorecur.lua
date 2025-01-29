@@ -57,7 +57,7 @@ local function post_strongconnect(self, v, w, S, G, info, executions, unvisited,
         v.lowlink = min(v.lowlink, w.index)
       end
     else -- w.index is undefined
-      executions:push(function()
+      executions:push(function ()
         post_strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
       end)
       return strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
@@ -65,9 +65,9 @@ local function post_strongconnect(self, v, w, S, G, info, executions, unvisited,
   end
 end
 
-strongconnect = function(self, u, v, S, G, info, executions, unvisited)
+strongconnect = function (self, u, v, S, G, info, executions, unvisited)
   push_to_S(self, v, S, unvisited)
-  executions:push(function()
+  executions:push(function ()
     post_successors(v, S)
   end)
   -- Consider successors of v
@@ -89,7 +89,7 @@ strongconnect = function(self, u, v, S, G, info, executions, unvisited)
     return
   end
   w_set[w] = nil
-  executions:push(function()
+  executions:push(function ()
     post_strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
   end)
   return strongconnect(self, v, w, S, G, info, executions, unvisited) -- tail recursion

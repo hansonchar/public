@@ -4,7 +4,7 @@ local Queue = require "algo.Queue"
 local BFS = GraphSearch:class()
 local E = {}
 
-local TO<const>, LEVEL<const> = 2, 4
+local TO <const>, LEVEL <const> = 2, 4
 
 local function _iterate(self, src)
   local q, visited = Queue:new(), {
@@ -19,7 +19,7 @@ local function _iterate(self, src)
     for to, weight in vertex:outgoings() do
       if not visited[to] then
         visited[to], self._visited_count = true, self._visited_count + 1
-        q:enqueue{from, to, weight, level}
+        q:enqueue {from, to, weight, level}
       end
     end
     local entry = (q:dequeue() or E)
