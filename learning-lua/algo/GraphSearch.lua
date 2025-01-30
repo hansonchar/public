@@ -3,9 +3,16 @@ local GraphSearch = {} -- A common base class for DFS, BFS, etc.
 -- local Queue = require "algo.Queue"
 local E = {}
 
-local function _yield(entry)
+---@param entry any the entry to be yielded either in packed or unpacked format.
+---@param is_packed (boolean?) true if the entry is to be yield as is without being unpacked; default is false.
+---@return any entry the input entry or an empty table if the input entry is nil.
+local function _yield(entry, is_packed)
   if entry then
-    coroutine.yield(table.unpack(entry))
+    if is_packed then
+      coroutine.yield(entry)
+    else
+      coroutine.yield(table.unpack(entry))
+    end
     return entry
   else
     return E

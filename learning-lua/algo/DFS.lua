@@ -4,10 +4,18 @@ local DFS = GraphSearch:class()
 local E = {}
 
 -- Element index of a stack entry with the format: {from, to, weight, depth, count_unvisited, begin_vertex, is_visited}
--- local FROM <const> = 1
+local FROM <const> = 1
 local TO <const> = 2
--- local WEIGHT <const> = 3
-local DEPTH <const>, UNVISITED <const>, BEGIN_VERTEX <const>, IS_VISITED <const> = 4, 5, 6, 7
+local WEIGHT <const> = 3
+local DEPTH <const>, CNT_UNVISITED <const>, BEGIN_VERTEX <const>, IS_FROND <const> = 4, 5, 6, 7
+
+DFS.FROM = FROM
+DFS.TO = TO
+DFS.WEIGHT = WEIGHT
+DFS.DEPTH = DEPTH
+DFS.UNVISITED = CNT_UNVISITED
+DFS.BEGIN_VERTEX = BEGIN_VERTEX
+DFS.IS_FROND = IS_FROND -- a visited edge of DFS is called a frond (as in a parm trees.)
 
 local function debug(...)
   -- print(...)
@@ -19,7 +27,7 @@ end
 ---@param level (number) the number of hops from the source node
 ---@param stack (table) the stack to push edges to
 ---@param visited_hist (table) used to check if a node has been visited
----@param is_include_visited (boolean) true to include the edges already visited.
+---@param is_include_visited (boolean?) true to include the edges already visited.
 --- These visited edges are called "fronds".
 --- (See Depth-First Search and Linear Graph Algorithms by Robert Tarjan.)
 ---@return (number) the number of unvisited outgoing edges pushed to the stack
@@ -40,7 +48,7 @@ local function push_edges(self, from, level, stack, visited_hist, is_include_vis
         if is_include_visited then
           -- Ignoring the 'unvisited count' and 'begin vertex' for now.
           local entry = {from, to, weight, level}
-          entry[IS_VISITED] = true
+          entry[IS_FROND] = true
           stack:push(entry)
         end
       else -- unexplored node
@@ -59,7 +67,7 @@ local function push_edges(self, from, level, stack, visited_hist, is_include_vis
         local weight = vertex.egress[to]
         -- Ignoring the 'unvisited count' and 'begin vertex' for now.
         local entry = {from, to, weight, level}
-        entry[IS_VISITED] = true
+        entry[IS_FROND] = true
         stack:push(entry)
       end
     else -- unexplored node
@@ -83,11 +91,12 @@ end
 ---@param src (any) optional source vertex. If specified, DFS will only be performed
 ---from this source vertex (ie. not necessarily exploring all nodes in the graph.).
 ---Otherwise, DFS will be performed on the entire graph exploring all nodes.
----@param is_include_visited (boolean) true if visited nodes are returned in addition to unvisited node.
+---@param is_include_visited (boolean?) true if visited nodes are returned in addition to unvisited node.
 ---The visited edges are called "fronds".
 ---(See Depth-First Search and Linear Graph Algorithms by Robert Tarjan.)
 ---This can be useful in special circumstances, such as implementing the Tarjan's SCC algorithm.
-local function _iterate(self, src, is_include_visited)
+---@param is_packed (boolean?) true if the entry is yielded as is; false if the entry is unpacked before being yielded.
+local function _iterate(self, src, is_include_visited, is_packed)
   local stack, visited_hist = Stack:new(), {}
   -- Applicable only if a single source (ie the 'src' parameter) is not specified for this DFS.
   -- If a single source is specified, the DFS will only be performed from that source vertex.
@@ -118,8 +127,8 @@ local function _iterate(self, src, is_include_visited)
   while node do
     if visited_hist[node] then
       if is_include_visited then
-        entry[IS_VISITED] = true
-        self._yield(entry)
+        entry[IS_FROND] = true
+        self._yield(entry, is_packed)
       end
     else -- first time visiting this node
       visited_hist[node], self._visited_count = true, self._visited_count + 1
@@ -128,24 +137,24 @@ local function _iterate(self, src, is_include_visited)
       local count_unvisited, push_count = push_edges(self, node, depth, stack, visited_hist, is_include_visited)
       -- 'entry' is nil only during the first iteration when we are starting with the source node.
       if entry then
-        entry[UNVISITED] = count_unvisited -- number of unvisited outgoing edges.
+        entry[CNT_UNVISITED] = count_unvisited -- number of unvisited outgoing edges.
         entry[BEGIN_VERTEX] = begin_vertex -- the source vertex of the DFS.
-        self._yield(entry)
+        self._yield(entry, is_packed)
       elseif push_count == 0 then -- the source node has no outgoing edges
         assert(node == begin_vertex)
         visited_hist[node], self._visited_count = true, self._visited_count + 1
         (unvisited_vertices or E)[node] = nil
         -- format: {from, to, weight, depth, count_unvisited, begin_vertex}
         -- yield the single node anyway so we don't loose a vertex during DFS.
-        self._yield {node, nil, nil, 0, 0, begin_vertex}
+        self._yield({node, nil, nil, 0, 0, begin_vertex}, is_packed)
       end
     end
     entry = (stack:pop() or E)
-    node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_VISITED]
+    node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_FROND]
     while is_visited do -- only possible if 'is_include_visited' is true.
-      self._yield(entry)
+      self._yield(entry, is_packed)
       entry = (stack:pop() or E)
-      node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_VISITED]
+      node, depth, is_visited = entry[TO], entry[DEPTH], entry[IS_FROND]
     end
     if unvisited_vertices and node then
       unvisited_vertices[node] = nil
