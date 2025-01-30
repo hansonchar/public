@@ -1,8 +1,6 @@
 local GraphSearch = require "algo.GraphSearch"
-local Graph = require "algo.Graph"
 local Stack = require "algo.Stack"
 local TarjanSCCSearch = GraphSearch:class()
-local E = {}
 
 local function debug(...)
   -- print(...)
