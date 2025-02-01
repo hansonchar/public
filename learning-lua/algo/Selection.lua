@@ -3,7 +3,7 @@ local Selection = {}
 Selection.__index = Selection
 
 ---Select the kth smallest/greatest element of the given array via random pivot selection.
----Currently only supports distinct values in the array.
+---This method currently assumes distinct values in the input array.
 ---@param ar (table) array the input array which can get mutated as a side effect.
 ---@param k (number) the kth smallest/greatest.
 ---@param start_pos (number?) starting position; default to 1.

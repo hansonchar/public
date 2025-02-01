@@ -1,7 +1,7 @@
 local Partition = require "algo.Partition"
 local P = Partition:new()
 local DEBUG = require "algo.Debug":new(false)
-local debugf, debug = DEBUG.debugf, DEBUG.debug
+local debugf, debug, concat = DEBUG.debugf, DEBUG.debug, DEBUG.concat
 
 local pos, a, count = P:partition(4, {3, 8, 2, 5, 1, 4, 7, 6}, 2, 7)
 local s = table.concat(a, ",")
@@ -57,4 +57,15 @@ assert(pos == 7)
 assert(s == '1,6,5,4,3,2,7,8', s)
 assert(count == 8)
 
-return Partition
+local function dup(ar)
+  local replica = {}
+  return table.move(ar, 1, #ar, 1, replica)
+end
+
+local ar = {3, 8, 2, 8, 5, 1, 4, 2, 7, 6}
+for i = 1, #ar do
+  local ar_dup = dup(ar)
+  -- print(concat(ar_dup, ","))
+  local pos, ar_o, count = P:partition(i, ar_dup)
+  debugf("%d: pos=%d of %s, swaps=%d", i, pos, concat(ar_o, ","), count)
+end

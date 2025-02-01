@@ -45,7 +45,7 @@ local strongconnect -- forward declaration
 
 local function post_strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
   v.lowlink = min(v.lowlink, w.lowlink)
-
+  local w_next
   for w in pairs(w_set) do
     w_set[w] = nil -- deletion is fine during iteration
     if w.index then
@@ -55,17 +55,21 @@ local function post_strongconnect(self, v, w, S, G, info, executions, unvisited,
         v.lowlink = min(v.lowlink, w.index)
       end
     else -- w.index is undefined
-      executions:push(function ()
-        post_strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
-      end)
-      return strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
+      w_next = w
+      break
     end
+  end
+  if w_next then
+    executions:push(function()
+      post_strongconnect(self, v, w_next, S, G, info, executions, unvisited, w_set)
+    end)
+    return strongconnect(self, v, w_next, S, G, info, executions, unvisited) -- tail recursion
   end
 end
 
-strongconnect = function (self, u, v, S, G, info, executions, unvisited)
+strongconnect = function(self, u, v, S, G, info, executions, unvisited)
   push_to_S(self, v, S, unvisited)
-  executions:push(function ()
+  executions:push(function()
     post_successors(v, S)
   end)
   -- Consider successors of v
@@ -87,7 +91,7 @@ strongconnect = function (self, u, v, S, G, info, executions, unvisited)
     return
   end
   w_set[w] = nil
-  executions:push(function ()
+  executions:push(function()
     post_strongconnect(self, v, w, S, G, info, executions, unvisited, w_set)
   end)
   return strongconnect(self, v, w, S, G, info, executions, unvisited) -- tail recursion
