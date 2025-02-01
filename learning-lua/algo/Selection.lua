@@ -2,6 +2,41 @@ local Partition = require "algo.Partition"
 local Selection = {}
 Selection.__index = Selection
 
+---Returns the median of the given five or less number of values.
+---@param a any
+---@param b any?
+---@param c any?
+---@param d any?
+---@param e any?
+---@return any median the median value.
+function Selection.median_of_5(a, b, c, d, e, ...)
+  assert(not ..., "At most five arguments")
+  if not b then
+    assert(not c and not d and not e)
+    return assert(a, "At least one argument")
+  elseif not c then
+    assert(not d and not e)
+    return a < b and a or b
+  elseif not d then
+    assert(not e)
+    d = d or -math.huge
+    e = math.huge
+  else
+    e = e or -math.huge
+  end
+  local min, min2, min3 = math.huge, math.huge, math.huge
+  for _, val in pairs {a, b, c, d, e} do
+    if val < min then
+      min3, min2, min = min2, min, val
+    elseif val < min2 then
+      min3, min2 = min2, val
+    elseif val < min3 then
+      min3 = val
+    end
+  end
+  return min3
+end
+
 ---Select the kth smallest/greatest element of the given array via random pivot selection.
 ---This method currently assumes distinct values in the input array.
 ---@param ar (table) array the input array which can get mutated as a side effect.
