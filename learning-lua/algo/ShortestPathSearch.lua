@@ -60,7 +60,7 @@ local function _iterate(self, src)
   local depth = 0
   local u = src
   repeat
-    sssp.vertices[u].ref = nil -- nullify from's heap reference as from is no longer on the heap
+    sssp.vertices[u].ref = nil -- nullify from's heap reference as the entry is no longer on the heap
     local u_vertex = self.graph:vertex(u)
     assert(u_vertex, "Vertex not found in graph.")
     depth = depth + 1
@@ -71,9 +71,9 @@ local function _iterate(self, src)
         v_info.min_cost = v_cost_so_far
         v_info.from = u
         local v_ref = v_info.ref
-        if v_ref then
+        if v_ref then -- remove from heap if necessary before adding
           local entry = heap:remove(v_ref.pos)
-          assert(entry[TO] == v, string.format("removed: %s, to: %s", entry[TO], v)) -- remove from heap if necessary before adding
+          assert(entry[TO] == v, string.format("removed: %s, to: %s", entry[TO], v))
         end
         v_info.ref = heap:add {u, v, weight, depth, v_cost_so_far}
       end

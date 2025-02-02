@@ -25,7 +25,7 @@ function GraphSearch:iterate(src, is_include_visited)
   assert(not src or self.graph:vertex(src), "Source vertex not found in graph")
   self._visited_count = 0
   -- self._nav = build_navigation(self)
-  return coroutine.wrap(function ()
+  return coroutine.wrap(function()
     self:_iterate(src, is_include_visited)
   end)
 end
