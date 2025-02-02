@@ -62,20 +62,24 @@ local function median_of_5_tests()
   assert(not ok)
   assert(err:match("At most five arguments"))
   debug(err)
+end
 
+local function median_of_medians_tests()
+  print("Running median_of_medians_tests ...")
   local mom = S.median_of_medians({1, 3, 6})
   assert(mom == 3)
 
   local ar = {3, 8, 2, 5, 1, 4, 7, 6}
   local median = S.median_of_medians(ar)
   assert(median == 3)
-end
 
-local function median_of_medians_tests()
-  print("Running median_of_medians_tests ...")
   local ar = {11, 6, 10, 2, 15, 8, 1, 7, 14, 3, 9, 12, 4, 5, 13}
   local median, pos = S.median_of_medians(ar)
   assert(median == 9 and pos == 11)
+
+  local ar = {11, 6, 10, 2, 15, 8, 1, 7, 14, 3, 9, 12, 4, 5, 13}
+  local median, pos = S.median_of_medians(ar, #ar >> 1)
+  assert(median == 5 and pos == 14)
 
   local ar = {12, 15, 11, 2, 9, 5, 0, 7, 3, 21, 44, 40, 1, 18, 20, 32, 19, 35, 37, 39,
     13, 16, 14, 8, 10, 26, 6, 33, 4, 27, 49, 46, 52, 25, 51, 34, 43, 56, 72, 79,
@@ -87,6 +91,31 @@ local function median_of_medians_tests()
   assert(median == 36 and pos == 48)
 end
 
+local function dselect_tests()
+  print("Running dselect_tests ...")
+  local ar = {6, 8, 9, 2}
+  local val, ar_o, count = S:dselect(ar, 2)
+  assert(val == 6, val)
+  debugf("Resultant array: %s, swaps: %d", concat(ar_o, ","), count)
+
+  local ar = {6, 8, 9, 2}
+  local val, ar_o, count = S:dselect(ar, 3)
+  assert(val == 8, val)
+  debugf("Resultant array: %s, swaps: %d", concat(ar_o, ","), count)
+
+  local ar = {3, 8, 2, 5, 1, 4, 7, 6}
+  local val, ar_o, count = S:dselect(ar, #ar >> 1)
+  assert(val == 4, val)
+  debugf("Resultant array: %s, swaps: %d", concat(ar_o, ","), count)
+
+  local ar = {3, 8, 2, 5, 1, 4, 7, 6}
+  local val, ar_o, count = S:dselect(ar, #ar >> 1)
+  assert(val == 4, val)
+  debugf("Resultant array: %s, swaps: %d", concat(ar_o, ","), count)
+end
+
+
 rselect_tests()
 median_of_5_tests()
 median_of_medians_tests()
+dselect_tests()

@@ -48,24 +48,22 @@ function Selection.median_of_5(a, b, c, d, e, ...)
   return min3, min3_pos
 end
 
--- local function min(a, b)
---   return a < b and a or b
--- end
-
 ---Returns the median of the medians of group of at most 5 elements, recursively.
 ---@param ar (table) array of elements.
 ---@return (any) median the median of the medians of group of at most 5 elements, recursively.
 ---@return (number) position the position of the median of the medians in 'ar'.
-function Selection.median_of_medians(ar)
-  assert(#ar > 0)
+function Selection.median_of_medians(ar, i, j)
+  i = i or 1
+  j = j or #ar
+  assert(i > 0 and i <= j and j <= #ar)
   local ar_pos = {}
   -- array of medians, and their respective positions in the original input array.
   local medians, medians_pos = {}, {}
   repeat
-    local groups_of_5 = math.ceil(#ar / 5)
-    local start_pos, end_pos = 1, 5
+    local groups_of_5 = math.ceil((j - i + 1) / 5)
+    local start_pos, end_pos = i, i + 4
     for _ = 1, groups_of_5 do
-      end_pos = end_pos < #ar and end_pos or #ar
+      end_pos = end_pos < j and end_pos or j
       local median, pos_1to5 = Selection.median_of_5(table.unpack(ar, start_pos, end_pos))
       medians[#medians + 1] = median
       local pos = pos_1to5 + start_pos - 1 -- from relative to absolute position in 'ar'.
@@ -77,6 +75,7 @@ function Selection.median_of_medians(ar)
     end
     debug()
     ar, ar_pos = medians, medians_pos
+    i, j = 1, #ar
     medians, medians_pos = {}, {}
   until #ar == 1
   return ar[1], ar_pos[1]
@@ -101,7 +100,8 @@ function Selection:rselect(ar, k, start_pos, end_pos, count)
   local P <const> = self.Partition or Partition
   -- Note math.random(a, b) would fail if a == b.
   local pivot_pos <const> = start_pos < end_pos and math.random(start_pos, end_pos) or start_pos
-  local pos <const>, ar, count = P:partition(pivot_pos, ar, start_pos, end_pos)
+  local pos
+  pos, ar, count = P:partition(pivot_pos, ar, start_pos, end_pos)
   total_count = total_count + count
   local k_pos <const> = start_pos + k - 1
   if pos == k_pos then -- so lucky!
@@ -110,6 +110,46 @@ function Selection:rselect(ar, k, start_pos, end_pos, count)
     return self:rselect(ar, k_pos - pos, pos + 1, end_pos, total_count)
   else -- pos > k_pos
     return self:rselect(ar, k, start_pos, pos - 1, total_count)
+  end
+end
+
+-- (This is not the real DSelect algorithm, which is more complicated.
+-- See Algorithms Illuminated Part 1 by Tim Roughgarden for more details.)
+---Select the kth smallest/greatest element of the given array via selecting
+---median of the medians as pivot.
+---This method currently assumes distinct values in the input array.
+---@param ar (table) array the input array which can get mutated as a side effect.
+---@param k (number) the kth smallest/greatest.
+---@param start_pos (number?) starting position; default to 1.
+---@param end_pos (number?) ending position; default to the size of the array.
+---@param count (number?) the number of swaps performed so far; default to zero.
+---@return (any) kth_value the value of the kth smallest/largest element.
+---@return (table) array the mutated array.
+---@return (number) count total number of swaps performed.
+function Selection:dselect(ar, k, start_pos, end_pos, count)
+  local total_count = count or 0
+  start_pos = start_pos or 1
+  end_pos = end_pos or #ar
+  assert(start_pos > 0 and start_pos <= end_pos and end_pos <= #ar)
+  assert(k > 0 and k <= end_pos - start_pos + 1)
+  local P <const> = self.Partition or Partition
+  -- Note math.random(a, b) would fail if a == b.
+  local pivot_pos
+  if start_pos < end_pos then
+    _, pivot_pos = Selection.median_of_medians(ar, start_pos, end_pos)
+  else
+    pivot_pos = start_pos
+  end
+  local pos
+  pos, ar, count = P:partition(pivot_pos, ar, start_pos, end_pos)
+  total_count = total_count + count
+  local k_pos <const> = start_pos + k - 1
+  if pos == k_pos then -- so lucky!
+    return ar[k_pos], ar, total_count
+  elseif pos < k_pos then
+    return self:dselect(ar, k_pos - pos, pos + 1, end_pos, total_count)
+  else -- pos > k_pos
+    return self:dselect(ar, k, start_pos, pos - 1, total_count)
   end
 end
 
