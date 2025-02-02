@@ -1,4 +1,3 @@
-local Graph = require "algo.Graph"
 local BinaryHeap = require "algo.BinaryHeap"
 local GraphSearch = require "algo.GraphSearch"
 local ShortestPathSearch = GraphSearch:class()
@@ -27,7 +26,7 @@ local function new_sssp(s)
   }
   setmetatable(sssp.vertices, sssp)
   setmetatable(sssp, sssp)
-  sssp.__index = function (self, key)
+  sssp.__index = function(self, key)
     local default = {
       min_cost = math.huge -- default min cost to infinity
     }
@@ -35,50 +34,53 @@ local function new_sssp(s)
     return default
   end
   sssp.shortest_path_of = shortest_path_of
-  sssp.__tostring = function (self) -- to make this work, we set setmetatable(sssp, sssp) above
+  sssp.__tostring = function(self) -- to make this work, we set setmetatable(sssp, sssp) above
     local a = {}
     for v in pairs(self.vertices) do
       a[#a + 1] = string.format("%s:%d", self:shortest_path_of(v), self.vertices[v].min_cost)
     end
     return table.concat(a, ', ')
   end
-  sssp.min_cost = function (self, v)
+  sssp.min_cost_of = function(self, v)
     return self.vertices[v].min_cost
   end
   return sssp
 end
 
--- Uses Dijkstra's algorithm
+-- Uses Dijkstra's algorithm.  DAG is assumed.
 local function _iterate(self, src)
+  assert(src, "Missing source vertex.")
   self.sssp = new_sssp(src)
-  local G, sssp = self.graph, self.sssp
-  local heap = BinaryHeap:new({}, function (a, b)
-    local a, b = a[TO], b[TO]
+  local sssp = self.sssp
+  --- Each heap entry has the format {node, to, weight, depth, v_cost_so_far}
+  local heap = BinaryHeap:new({}, function(a_entry, b_entry)
+    local a, b = a_entry[TO], b_entry[TO]
     return sssp.vertices[a].min_cost <= sssp.vertices[b].min_cost
   end)
   local depth = 0
-  local node = src
+  local u = src
   repeat
-    sssp.vertices[node].ref = nil -- nullify from's heap reference as from is no longer on the heap
-    local vertex = self.graph:vertex(node)
+    sssp.vertices[u].ref = nil -- nullify from's heap reference as from is no longer on the heap
+    local u_vertex = self.graph:vertex(u)
+    assert(u_vertex, "Vertex not found in graph.")
     depth = depth + 1
-    for to, weight in vertex:outgoings() do
+    for v, weight in u_vertex:outgoings() do
       assert(weight >= 0, "Weight must not be negative")
-      local v_info, v_cost_so_far = sssp.vertices[to], sssp.vertices[node].min_cost + weight
+      local v_info, v_cost_so_far = sssp.vertices[v], sssp.vertices[u].min_cost + weight
       if v_cost_so_far < v_info.min_cost then
         v_info.min_cost = v_cost_so_far
-        v_info.from = node
+        v_info.from = u
         local v_ref = v_info.ref
         if v_ref then
           local entry = heap:remove(v_ref.pos)
-          assert(entry[TO] == to, string.format("removed: %s, to: %s", entry[TO], to)) -- remove from heap if necessary before adding
+          assert(entry[TO] == v, string.format("removed: %s, to: %s", entry[TO], v)) -- remove from heap if necessary before adding
         end
-        v_info.ref = heap:add {node, to, weight, depth, v_cost_so_far}
+        v_info.ref = heap:add {u, v, weight, depth, v_cost_so_far}
       end
     end
-    local item = self._yield(heap:remove())
-    node, depth = item[TO], item[DEPTH]
-  until not node -- note a cyclical path would lead to infinite iteration
+    local entry = self._yield(heap:remove())
+    u, depth = entry[TO], entry[DEPTH]
+  until not u -- note a cyclical path would lead to infinite iteration
 end
 
 --- ShortestPathSearch.lua enables graph traveral using an iterator
@@ -92,10 +94,10 @@ end
 ---   nodes with monotonic non-decreasing
 ---   shortest possible distances from the source node, in an incremental manner.
 --- * No full computation on the entire graph necessary a priori.
----@param G (table) graph
+---@param G (table) A directed acyclic graph (DAG).
 function ShortestPathSearch:new(G)
   local o = getmetatable(self):new(G, _iterate)
-  o.shortest_paths = function (self)
+  o.shortest_paths = function(self)
     return self.sssp
   end
   return o

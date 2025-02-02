@@ -21,10 +21,10 @@ local function basic_tests()
 
   local sssp = search:shortest_paths()
   print(sssp)
-  assert(sssp:min_cost('s') == 0)
-  assert(sssp:min_cost('t') == 6)
-  assert(sssp:min_cost('v') == 1)
-  assert(sssp:min_cost('w') == 3)
+  assert(sssp:min_cost_of('s') == 0)
+  assert(sssp:min_cost_of('t') == 6)
+  assert(sssp:min_cost_of('v') == 1)
+  assert(sssp:min_cost_of('w') == 3)
 end
 
 local function load_input(input)
@@ -54,13 +54,13 @@ local function tim_test()
   end
   local shortest_paths = search:shortest_paths()
   print(shortest_paths)
-  assert(shortest_paths:min_cost('s') == 0)
+  assert(shortest_paths:min_cost_of('s') == 0)
   assert(shortest_paths:shortest_path_of('s') == 's')
-  assert(shortest_paths:min_cost('v') == 1)
+  assert(shortest_paths:min_cost_of('v') == 1)
   assert(shortest_paths:shortest_path_of('v') == 's-v')
-  assert(shortest_paths:min_cost('w') == 3)
+  assert(shortest_paths:min_cost_of('w') == 3)
   assert(shortest_paths:shortest_path_of('w') == 's-v-w')
-  assert(shortest_paths:min_cost('t') == 6)
+  assert(shortest_paths:min_cost_of('t') == 6)
   assert(shortest_paths:shortest_path_of('t') == 's-v-w-t')
 end
 
@@ -87,31 +87,31 @@ local function geek_test()
   local sssp = search:shortest_paths()
   print(sssp)
   assert(sssp:shortest_path_of('0') == '0')
-  assert(sssp:min_cost('0') == 0)
+  assert(sssp:min_cost_of('0') == 0)
 
   assert(sssp:shortest_path_of('1') == '0-1')
-  assert(sssp:min_cost('1') == 4)
+  assert(sssp:min_cost_of('1') == 4)
 
   assert(sssp:shortest_path_of('2') == '0-1-2')
-  assert(sssp:min_cost('2') == 12)
+  assert(sssp:min_cost_of('2') == 12)
 
   assert(sssp:shortest_path_of('3') == '0-1-2-3')
-  assert(sssp:min_cost('3') == 19)
+  assert(sssp:min_cost_of('3') == 19)
 
   assert(sssp:shortest_path_of('4') == '0-7-6-5-4')
-  assert(sssp:min_cost('4') == 21)
+  assert(sssp:min_cost_of('4') == 21)
 
   assert(sssp:shortest_path_of('5') == '0-7-6-5')
-  assert(sssp:min_cost('5') == 11)
+  assert(sssp:min_cost_of('5') == 11)
 
   assert(sssp:shortest_path_of('6') == '0-7-6')
-  assert(sssp:min_cost('6') == 9)
+  assert(sssp:min_cost_of('6') == 9)
 
   assert(sssp:shortest_path_of('7') == '0-7')
-  assert(sssp:min_cost('7') == 8)
+  assert(sssp:min_cost_of('7') == 8)
 
   assert(sssp:shortest_path_of('8') == '0-1-2-8')
-  assert(sssp:min_cost('8') == 14)
+  assert(sssp:min_cost_of('8') == 14)
 end
 
 -- https://www.redblobgames.com/pathfinding/posts/reprioritize.html
@@ -135,19 +135,19 @@ local function redblobgames_test()
   local sssp = search:shortest_paths()
   print(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
-  assert(sssp:min_cost(src) == 0)
+  assert(sssp:min_cost_of(src) == 0)
 
   assert(sssp:shortest_path_of('B') == 'A-B')
-  assert(sssp:min_cost('B') == 1)
+  assert(sssp:min_cost_of('B') == 1)
 
   assert(sssp:shortest_path_of('C') == 'A-B-C')
-  assert(sssp:min_cost('C') == 2)
+  assert(sssp:min_cost_of('C') == 2)
 
   assert(sssp:shortest_path_of('D') == 'A-B-C-D')
-  assert(sssp:min_cost('D') == 3)
+  assert(sssp:min_cost_of('D') == 3)
 
   assert(sssp:shortest_path_of('E') == 'A-B-C-D-E')
-  assert(sssp:min_cost('E') == 4)
+  assert(sssp:min_cost_of('E') == 4)
 end
 
 -- https://algodaily.com/lessons/an-illustrated-guide-to-dijkstras-algorithm
@@ -172,22 +172,22 @@ local function algodaily_test()
   local sssp = search:shortest_paths()
   print(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
-  assert(sssp:min_cost(src) == 0)
+  assert(sssp:min_cost_of(src) == 0)
 
   assert(sssp:shortest_path_of('B') == 'A-B')
-  assert(sssp:min_cost('B') == 5)
+  assert(sssp:min_cost_of('B') == 5)
 
   assert(sssp:shortest_path_of('C') == 'A-C')
-  assert(sssp:min_cost('C') == 2)
+  assert(sssp:min_cost_of('C') == 2)
 
   assert(sssp:shortest_path_of('D') == 'A-C-D')
-  assert(sssp:min_cost('D') == 6)
+  assert(sssp:min_cost_of('D') == 6)
 
   assert(sssp:shortest_path_of('E') == 'A-C-E')
-  assert(sssp:min_cost('E') == 10)
+  assert(sssp:min_cost_of('E') == 10)
 
   assert(sssp:shortest_path_of('F') == 'A-C-D-F')
-  assert(sssp:min_cost('F') == 10)
+  assert(sssp:min_cost_of('F') == 10)
 end
 
 -- CE 191 - CEE Systems Analysis by Processor Scott Moura, University of California, Berkeley
@@ -213,28 +213,28 @@ local function scott_moura_test()
   local sssp = search:shortest_paths()
   print(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
-  assert(sssp:min_cost(src) == 0)
+  assert(sssp:min_cost_of(src) == 0)
 
   assert(sssp:shortest_path_of('B') == 'A-B')
-  assert(sssp:min_cost('B') == 2)
+  assert(sssp:min_cost_of('B') == 2)
 
   assert(sssp:shortest_path_of('C') == 'A-C')
-  assert(sssp:min_cost('C') == 4)
+  assert(sssp:min_cost_of('C') == 4)
 
   assert(sssp:shortest_path_of('D') == 'A-D')
-  assert(sssp:min_cost('D') == 4)
+  assert(sssp:min_cost_of('D') == 4)
 
   assert(sssp:shortest_path_of('E') == 'A-D-E')
-  assert(sssp:min_cost('E') == 9)
+  assert(sssp:min_cost_of('E') == 9)
 
   assert(sssp:shortest_path_of('F') == 'A-B-F')
-  assert(sssp:min_cost('F') == 8)
+  assert(sssp:min_cost_of('F') == 8)
 
   assert(sssp:shortest_path_of('G') == 'A-B-F-G')
-  assert(sssp:min_cost('G') == 10)
+  assert(sssp:min_cost_of('G') == 10)
 
   assert(sssp:shortest_path_of('H') == 'A-B-F-G-H')
-  assert(sssp:min_cost('H') == 12)
+  assert(sssp:min_cost_of('H') == 12)
 end
 
 local function negative_tests()
