@@ -66,41 +66,57 @@ function Graph:remove(node)
   self[node] = nil
 end
 
+---@param u (string) vertex from
+---@param v (string?) vertex to (optional)
+---@param weight (number?) weight of u-v
+function Graph:add_undirected(u, v, weight)
+  self:add(u, v, weight)
+  if v then
+    self:add(v, u, weight)
+  end
+end
+
+local function add_vertex(self, node)
+  if not self[node] then -- add v as a vertex
+    self[node] = setmetatable({
+      graph = self
+    }, mt_vertex)
+  end
+end
+
+local function add_ingress(self, u, v, weight)
+  local v_node = self[v]
+  assert(v_node)
+  v_node.ingress = v_node.ingress or {}
+  v_node.ingress[u] = weight
+end
+
 --- Adds a vertex u and optionally a weighted directional edge from u to v.
---- (FEATURE): Calling this method after Graph:build_ingress() would lead to undefined behavior.
 ---@param u (string) vertex from
 ---@param v (string?) vertex to (optional)
 ---@param weight (number?) weight of u-v
 function Graph:add(u, v, weight)
-  assert(not self:is_ingress_built(),
-    "Currently calling this method after Graph:build_ingress() would lead to undefined behavior.")
   weight = weight or 1
-  if not self[u] then
-    self[u] = setmetatable({
-      graph = self
-    }, mt_vertex)
-  end
+  add_vertex(self, u)
   self[u].egress = self[u].egress or {}
   local egress = self[u].egress
   if v then
     assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
     egress[v] = tonumber(weight)
-    if not self[v] then -- add v as a vertex
-      self[v] = setmetatable({
-        graph = self
-      }, mt_vertex)
+    add_vertex(self, v)
+    if self:is_ingress_built() then
+      add_ingress(self, u, v, weight)
     end
   end
 end
 
---- (FEATURE): Currently this method can be called at most once; otherwise undefined behavior.
 function Graph:build_ingress()
-  assert(not self:is_ingress_built(), "Currently Graph:build_ingress() can be called at most once")
+  if self:is_ingress_built() then
+    return self
+  end
   for u, u_node in pairs(self) do
     for v, weight in pairs(u_node.egress or E) do
-      local v_node = self[v]
-      v_node.ingress = v_node.ingress or {}
-      v_node.ingress[u] = weight
+      add_ingress(self, u, v, weight)
     end
   end
   local xtra_info = getmetatable(self)
