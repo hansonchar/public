@@ -2,6 +2,8 @@
 -- Courtesy of https://en.wikipedia.org/wiki/J._W._J._Williams
 local BinaryHeap = {}
 
+local TOMBSTONE <const> = {}
+
 local function swap(a, i, j)
   a[i], a[j] = a[j], a[i]
   a[i].pos, a[j].pos = i, j
@@ -15,7 +17,7 @@ local function bubble_up(self, i)
   local a, comp = self, self.comp
   while i > 1 do
     local p = i >> 1 -- parent
-    if comp(a[p].val, a[i].val) then -- value stored at index i is not smaller than that of its parent
+    if a[i].val ~= TOMBSTONE and comp(a[p].val, a[i].val) then -- value stored at index i is not smaller than that of its parent
       return
     end
     swap(a, i, p) -- swap with parent
@@ -43,6 +45,13 @@ local function trickle_down(self, i)
   end
 end
 
+local function remove_root(self)
+  local a = self
+  a[1], a[#a] = a[#a], nil
+  a[1].pos = 1
+  trickle_down(a, 1)
+end
+
 --- Move the last element to the root, and then maintain the heap invariant as necessary by repeatedly
 --- swapping with the smallest/largest of the two children.
 function BinaryHeap:remove(i)
@@ -55,15 +64,17 @@ function BinaryHeap:remove(i)
   end
   local a = self
   assert(0 < i and i <= #a, "index out of bound")
-  local root = a[i]
+  local old_val = a[i].val
   if #a == i then
     a[i] = nil
-  else
-    a[i], a[#a] = a[#a], nil
-    a[i].pos = i
-    trickle_down(a, i)
+  elseif i == 1 then
+    remove_root(self)
+  else -- somewhere in the middle
+    a[i].val = TOMBSTONE
+    bubble_up(self, i) -- bubble up to the top, and
+    remove_root(self) -- then remove it
   end
-  return root.val
+  return old_val
 end
 
 function BinaryHeap:top()

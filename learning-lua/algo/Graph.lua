@@ -101,7 +101,7 @@ function Graph:add(u, v, weight)
   self[u].egress = self[u].egress or {}
   local egress = self[u].egress
   if v then
-    assert(not egress[v], string.format("Duplicate addition of %s-%s %d", u, v, weight))
+    assert(not egress[v], string.format("Duplicate addition of %s-%s %s", u, v, weight))
     egress[v] = tonumber(weight)
     add_vertex(self, v)
     if self:is_ingress_built() then

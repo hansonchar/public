@@ -1,9 +1,8 @@
 local ShortestPathSearch = require "algo.ShortestPathSearch"
 local Graph = require "algo.Graph"
 
-local function debug(...)
-  print(...)
-end
+local DEBUG = require "algo.Debug":new(false)
+local debugf, debug = DEBUG.debugf, DEBUG.debug
 
 local function basic_tests()
   print("ShortestPathSearch basic tests...")
@@ -16,11 +15,11 @@ local function basic_tests()
 
   local search = ShortestPathSearch:new(G)
   for from, to, weight, level, min_cost in search:iterate('s') do
-    debug(string.format("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost))
+    debugf("%d: %s-%s=%d, min:%d", level, from, to, weight, min_cost)
   end
 
   local sssp = search:shortest_paths()
-  print(sssp)
+  debug(sssp)
   assert(sssp:min_cost_of('s') == 0)
   assert(sssp:min_cost_of('t') == 6)
   assert(sssp:min_cost_of('v') == 1)
@@ -53,7 +52,7 @@ local function tim_test()
     assert(count == 1)
   end
   local shortest_paths = search:shortest_paths()
-  print(shortest_paths)
+  debug(shortest_paths)
   assert(shortest_paths:min_cost_of('s') == 0)
   assert(shortest_paths:shortest_path_of('s') == 's')
   assert(shortest_paths:min_cost_of('v') == 1)
@@ -85,7 +84,7 @@ local function geek_test()
   assert(level_counts[4] == 1)
 
   local sssp = search:shortest_paths()
-  print(sssp)
+  debug(sssp)
   assert(sssp:shortest_path_of('0') == '0')
   assert(sssp:min_cost_of('0') == 0)
 
@@ -133,7 +132,7 @@ local function redblobgames_test()
   end
 
   local sssp = search:shortest_paths()
-  print(sssp)
+  debug(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
   assert(sssp:min_cost_of(src) == 0)
 
@@ -170,7 +169,7 @@ local function algodaily_test()
   assert(level_counts[3] == 1)
 
   local sssp = search:shortest_paths()
-  print(sssp)
+  debug(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
   assert(sssp:min_cost_of(src) == 0)
 
@@ -211,7 +210,7 @@ local function scott_moura_test()
   assert(level_counts[4] == 1)
 
   local sssp = search:shortest_paths()
-  print(sssp)
+  debug(sssp)
   assert(sssp:shortest_path_of('A') == 'A')
   assert(sssp:min_cost_of(src) == 0)
 
