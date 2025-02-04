@@ -53,10 +53,12 @@ local function _iterate(self, src)
               assert(w == w_ref.val[V])
               debugf("%s - %s-%s: %s < %s-%s: %s on heap",
                 w, v, w, weight, w_ref.val[U], w, w_ref.val[WEIGHT])
-              heap:remove(w_ref.pos)
+              heap_ref[w] = heap:update(w_ref.pos, {weight, v, w})
               -- heap:verify()
-              heap_ref[w] = heap:add {weight, v, w}
-              -- heap:verify()
+              -- heap:remove(w_ref.pos)
+              -- -- heap:verify()
+              -- heap_ref[w] = heap:add {weight, v, w}
+              -- -- heap:verify()
             end
           else -- w not on heap
             heap_ref[w] = heap:add {weight, v, w}

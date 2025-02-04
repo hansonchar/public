@@ -54,6 +54,8 @@ end
 
 --- Move the last element to the root, and then maintain the heap invariant as necessary by repeatedly
 --- swapping with the smallest/largest of the two children.
+---@param i (number) the position of the element in the heap to be removed.
+---@return (any) old_val the value removed.
 function BinaryHeap:remove(i)
   if not i then
     if self:empty() then
@@ -65,8 +67,8 @@ function BinaryHeap:remove(i)
   local a = self
   assert(0 < i and i <= #a, "index out of bound")
   local old_val = a[i].val
-  if #a == i then
-    a[i] = nil
+  if #a == i then -- If it's the last element,
+    a[i] = nil -- we can just ditch it.
   elseif i == 1 then
     remove_root(self)
   else -- somewhere in the middle
@@ -75,6 +77,25 @@ function BinaryHeap:remove(i)
     remove_root(self) -- then remove it
   end
   return old_val
+end
+
+---Update the value of the element at a given position in the heap.
+---@param i (number) position of the element in the heap.
+---@param new_val (any) new value of the element.
+---@return (table) entry reference to the element updated, containing both the new position and value.
+---@return (any) old_val the old value.
+function BinaryHeap:update(i, new_val)
+  assert(0 < i and i <= #self, "index out of bound")
+  local a, comp = self, self.comp
+  local entry = a[i]
+  local old_val = entry.val
+  entry.val = new_val
+  if comp(new_val, old_val) then
+    bubble_up(self, i)
+  else
+    trickle_down(self, i)
+  end
+  return entry, old_val
 end
 
 function BinaryHeap:top()
