@@ -71,11 +71,14 @@ local function _iterate(self, src)
         v_info.min_cost = v_cost_so_far
         v_info.from = u
         local v_ref = v_info.ref
-        if v_ref then -- remove from heap if necessary before adding
-          local entry = heap:remove(v_ref.pos)
-          assert(entry[TO] == v, string.format("removed: %s, to: %s", entry[TO], v))
+        if v_ref then
+          v_info.ref = heap:update(v_ref.pos, {u, v, weight, depth, v_cost_so_far})
+          -- remove from heap if necessary before adding
+          -- local entry = heap:remove(v_ref.pos)
+          -- assert(entry[TO] == v, string.format("removed: %s, to: %s", entry[TO], v))
+        else
+          v_info.ref = heap:add {u, v, weight, depth, v_cost_so_far}
         end
-        v_info.ref = heap:add {u, v, weight, depth, v_cost_so_far}
       end
     end
     local entry = self._yield(heap:remove())
