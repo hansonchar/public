@@ -133,6 +133,20 @@ function Graph:vertices()
   return pairs(self)
 end
 
+function Graph:_edges()
+  for u, u_info in self:vertices() do
+    for v, weight in u_info:outgoings() do
+      coroutine.yield(u, v, weight)
+    end
+  end
+end
+
+function Graph:edges()
+  return coroutine.wrap(function()
+    self:_edges()
+  end)
+end
+
 function Graph:empty()
   return not next(self)
 end
