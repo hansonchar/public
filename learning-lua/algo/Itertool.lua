@@ -17,7 +17,7 @@ end
 ---@param a (table) array.
 ---@param k (number) the number of elements to choose.
 function Itertool.combinations(a, k)
-  return coroutine.wrap(function ()
+  return coroutine.wrap(function()
     combinationsA(a, k, {}, 1)
   end)
 end
