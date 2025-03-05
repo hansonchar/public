@@ -57,6 +57,18 @@ function Euclid.xgcd(a, b)
   end
 end
 
+---Returns the inverse of `a` modulo `m` i.e. (a * x) % m == 1,
+---under the condition that `a` and `m` are relatively prime.
+---@param a number positive integer.`
+---@param m number positive integer; at least 2.
+---@return number x such that (a * x) % m == 1.
+function Euclid.inverse_mod(a, m)
+  assert(m > 1, "m must be at least 2")
+  local d, s = Euclid.xgcd(a, m)
+  assert(d == 1, "a and m must be relatively prime")
+  return s % m
+end
+
 return Euclid
 
 -- To check tail recursiveness:

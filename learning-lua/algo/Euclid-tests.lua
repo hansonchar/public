@@ -1,5 +1,6 @@
 local gcd = require "algo.Euclid".gcd
 local xgcd = require "algo.Euclid".xgcd
+local inverse_mod = require "algo.Euclid".inverse_mod
 
 local DEBUG = require "algo.Debug":new(false)
 local debugf = DEBUG.debugf
@@ -50,3 +51,9 @@ verify_xgcd(54, 123, xgcd(54, 123))
 
 verify_xgcd(84, 33, xgcd(84, 33))
 verify_xgcd(270, 192, xgcd(270, 192))
+
+local x = inverse_mod(41, 18)
+assert((41 * x) % 18 == 1)
+
+x = inverse_mod(18, 41)
+assert((18 * x) % 41 == 1)
