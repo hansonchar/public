@@ -86,6 +86,6 @@ Oh, what cheating!
 
 * [Applied Discrete Structures - Recursion and Recurrence Relations
 ](https://math.libretexts.org/Bookshelves/Combinatorics_and_Discrete_Mathematics/Applied_Discrete_Structures_(Doerr_and_Levasseur)/08%3A_Recursion_and_Recurrence_Relations/8.03%3A_Recurrence_Relations?readerView) by Doerr and Levasseur.
-  * Fun fact: the recurrance on this page is the same as that of [Eercise 8.3.5](https://math.libretexts.org/Bookshelves/Combinatorics_and_Discrete_Mathematics/Applied_Discrete_Structures_(Doerr_and_Levasseur)/08%3A_Recursion_and_Recurrence_Relations/8.03%3A_Recurrence_Relations?readerView) but with different coefficients.
+  * Fun fact: the recurrance on this page is the same as that of [Exercise 8.3.5](https://math.libretexts.org/Bookshelves/Combinatorics_and_Discrete_Mathematics/Applied_Discrete_Structures_(Doerr_and_Levasseur)/08%3A_Recursion_and_Recurrence_Relations/8.03%3A_Recurrence_Relations?readerView) but with different coefficients.
 * [Lecture 36: Symbolic Computation with sympy - Solving Recurrence Relations](https://homepages.math.uic.edu/~jan/mcs320/mcs320notes/lec36.html#solving-recurrence-relations) by University of Illinois at Chicago.
 * [Sage, LaTeX and Friends](https://doc.sagemath.org/html/en/tutorial/latex.html)
