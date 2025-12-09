@@ -12,3 +12,20 @@ Vietnam: March 2 - 9 (after HK: Feb 24 – Mar 1)
 | **Day 6** | **Ninh Binh: Limestone Karst** | **Morning:** Take the 3-hour **Trang An Scenic Landscape Complex** boat tour (choose Route 3 for best caves/temples). **Afternoon:** Climb the nearly 500 steps to the **Mua Cave Viewpoint** (*Hang Múa*) for the iconic panoramic view of the river and rice fields. | Local transport (taxi/scooter) |
 | **Day 7** | **Ninh Binh: Cycling & History** | **Morning:** Rent a bike and **cycle** through the rice fields to **Bich Dong Pagoda**. **Afternoon:** Visit **Hoa Lu Ancient Capital** (Dinh & Le King Temples). Late Afternoon: Travel back to **Hanoi**. | 2 hours by shuttle/train to Hanoi |
 | **Day 8** | **Departure Day** | Morning: Enjoy a final Vietnamese breakfast and souvenir shopping in the Old Quarter. Transfer to Noi Bai International Airport (HAN) for your flight back to SEA. | ~1 hr transfer to airport |
+
+## To Try
+
+- Try to eat some “mien ga” - bean thread noodle with chicken soup
+
+## Avoid
+
+- unofficial taxis at airports (use Grab instead)
+- money exchange at hotels (use ATM or officianl exchange offices)
+- beware of "broken meter" excuse, or drivers who "don't have change"
+- motorbikes
+- ice in drinks, except at reputable restaurants
+- tap water
+- empty restaurants
+- overpriced tourist restaurants (eat where locals eat)
+- booking tours thru hotel (book directly or thru online platforms)
+- buying from agressive street vendors
