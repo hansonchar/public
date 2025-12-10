@@ -29,3 +29,13 @@ Vietnam: March 2 - 9 (after HK: Feb 24 – Mar 1)
 - overpriced tourist restaurants (eat where locals eat)
 - booking tours thru hotel (book directly or thru online platforms)
 - buying from agressive street vendors
+
+## Currency convesion
+
+As a rough rule of thumb, 1 USD ≈ 26,000 VND. To quickly estimate an upper bound in USD for an amount given in VND, use the following heuristic:
+
+1. Ignore any decimal places.
+1. Divide the amount by 100,000, keeping only two decimal places.
+1. Multiply the result by 4.
+
+For example, for 260,000.55 VND: Ignore decimals → 260,000, Divide by 100,000 → 2.60, Multiply by 4 → 10.40 USD. This estimate slightly overstates the more accurate value of about 9.86 USD.
