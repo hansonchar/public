@@ -53,3 +53,7 @@ For example, for 260,000.55 VND: Ignore decimals → 260,000, Divide by 100,000 
 - Bring plug adapters (US: 120V/60Hz, Type A or B)
   - HK (Type G, D sockets; 220V/50Hz)
   - Vietnam (Type A, C, D, or F sockets; 220V/50Hz; 110V/220V in some older areas)
+
+## Done
+
+- Order [Fast Track Service](https://www.getyourguide.com/hanoi-l205/fast-track-services-noi-bai-airport-hanoi-no-waiting-t694667/) for departure at HAN airport
