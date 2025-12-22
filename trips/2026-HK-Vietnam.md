@@ -40,20 +40,35 @@ As a rough rule of thumb, 1 USD ≈ 26,000 VND. To quickly estimate an upper bou
 
 For example, for 260,000.55 VND: Ignore decimals → 260,000, Divide by 100,000 → 2.60, Multiply by 4 → 10.40 USD. This estimate slightly overstates the more accurate value of about 9.86 USD.
 
+## Travel Advisory
+
+- The crime emergency line in Vietnam is 113.
+- [Vietnam Country Security Report](https://www.osac.gov/Content/Report/182396b7-4bda-40e2-98c5-1c4093caea15)
+  - the most common target is cell phones: market area on Hanoi’s Quán Thánh street selling used cell phones and tables is colloquially known as “Stolen Phone Street.”
+  - bag snatching: Keep a tight hold on bags as you enter and exit vehicles and as you walk around.  
+  - Police are often lack proper funding and training ... some police have asked for bribes
+  - If arrested, insist on contacting American Citizen Services.
+  - Vietnam has one of the world’s highest levels of infected personal computers and malware penetration.
+- Google Fi: typically roams on **MobiFone** or **Viettel**. May need manually choose these carriers via "Network Selection".
+  - Download Offline Maps
+  - Toggle Airplane Mode to reconnect to local tower
+  - Cheap (espeically Viettel) SIMs
+
 ## Outstanding
 
-- [Apply for e-visa](https://evisa.gov.vn/) for visiting Vietnam as necessary
-  - Inform hotel and cruise on details for pickups
-  - Reply to cruise on registration details
-- Arrange transportation from Ninh Binh back to Hanoi on March 8th
-- Purchase travel insurance
 - Learn some Vietnamese
 - Bring cash in VND
 - Purchase TSA luggage locks
 - Bring plug adapters (US: 120V/60Hz, Type A or B)
-  - HK (Type G, D sockets; 220V/50Hz)
-  - Vietnam (Type A, C, D, or F sockets; 220V/50Hz; 110V/220V in some older areas)
+  - [HK (Type G, D sockets; 220V/50Hz)](https://www.power-plugs-sockets.com/us/hong-kong/)
+  - [Vietnam (Type A, C, D, or F sockets; 220V/50Hz; 110V/220V in some older areas)](https://www.power-plugs-sockets.com/us/vietnam/)
 
 ## Done
 
 - Order [Fast Track Service](https://www.getyourguide.com/hanoi-l205/fast-track-services-noi-bai-airport-hanoi-no-waiting-t694667/) for departure at HAN airport
+- [Apply for e-visa](https://evisa.gov.vn/) for visiting Vietnam as necessary
+  - Inform hotel and cruise on details for pickups
+  - Reply to cruise on registration details
+- Arrange transportation from cruise to Ninh Binh
+- Purchase travel insurance
+- Arrange transportation from Ninh Binh back to Hanoi on March 8th
