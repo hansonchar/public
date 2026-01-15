@@ -40,6 +40,38 @@ As a rough rule of thumb, 1 USD ≈ 26,000 VND. To quickly estimate an upper bou
 
 For example, for 260,000.55 VND: Ignore decimals → 260,000, Divide by 100,000 → 2.60, Multiply by 4 → 10.40 USD. This estimate slightly overstates the more accurate value of about 9.86 USD.
 
+## Cash
+
+1. For 8 days, a safe estimate is **500,000 to 1,000,000 VND (~$20–$40 USD) per person, per day** for "walking around" money (food, tips, small purchases).
+1. Try to keep small denominations: **20,000 VND**, **50,000 VND**, and **100,000 VND** notes handy.
+1. Avoid carrying large amount of cash in a single wallet.
+
+**Usages**:
+
+- small tips for drivers (**50,000 – 100,000 VND**) are standard but not mandatory.
+- custom to tip your boat rower at the end of the tour (usually **50,000 – 100,000 VND per person**).
+- Small Entrance Fees/Parking: If you explore areas like Mua Cave or local temples on your own, entrance fees and motorbike/bicycle parking are paid in cash.
+
+**Withdrawal**:
+
+- In Hanoi, Use ATMs (like **TPBank** or **VPBank** which often have no local fees) to take out 2–3 million VND at a time.
+- **Before Ninh Binh**, make sure to have at least **1,000,000 VND** in small bills (**20k, 50k, 100k**) before leaving Hanoi, as ATMs are harder to find in the rural areas.
+  - Not taking into account the private transportation from NinhBinh back to Hanoi will cost **1,300,000 VND**.
+- **Gold shops** in Hanoi's Old Quarter, particularly along **Ha Trung Street**, generally offer more favorable rates than the airport.
+
+**Common mistakes**:
+
+- 20,000 vs 50,000 VND. Both are blue-ish polymer notes. Similar size and texture.
+- 100,000 vs 200,000 VND. Both are green polymer notes. Same material and close in size.
+- 10,000 vs 100,000 VND. Both can appear green-ish at a glance.
+- 1,000 vs 2,000 VND (older paper notes). Similar brown tones.
+
+**Practical Tips**:
+
+1. Sort by denomination immediately after receiving change.
+1. Check the number of zeros rather than color alone.
+1. Pause on **blue** notes (20k vs 50k) — that’s the danger zone.
+
 ## Travel Advisory
 
 - The crime emergency line in Vietnam is 113.
