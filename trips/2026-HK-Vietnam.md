@@ -16,6 +16,10 @@ Vietnam: March 2 - 9 (after HK: Feb 24 – Mar 1)
 ## To Try
 
 - Try to eat some “mien ga” - bean thread noodle with chicken soup
+- Hanoi’s famous street food (Banh Mi, Bun Cha, Egg Coffee)
+  - Banh Mi: iconic Vietnamese street food, crusty French baguettes filled with pâté, pickled vegetables, fresh herbs, and various proteins
+  - Bun Cha: grilled pork served with rice noodles, fresh herbs, and a dipping sauce
+  - Egg Coffee (Cà Phê Trứng): strong Vietnamese coffee topped with a creamy, whipped mixture of egg yolk, sugar, and condensed milk.
 
 ## Avoid
 
@@ -43,8 +47,9 @@ For example, for 260,000.55 VND: Ignore decimals → 260,000, Divide by 100,000 
 ## Cash
 
 1. For 8 days, a safe estimate is **500,000 to 1,000,000 VND (~$20–$40 USD) per person, per day** for "walking around" money (food, tips, small purchases).
-1. Try to keep small denominations: **20,000 VND**, **50,000 VND**, and **100,000 VND** notes handy.
+1. Try to keep small denominations: **20,000 VND**, **50,000 VND**, and **100,000 VND** notes handy ⇒ maybe more in 50 and 100k bills, so less hassle to deal with bulky cash.
 1. Avoid carrying large amount of cash in a single wallet.
+1. USD is recognized as a universal currency ⇒ easy to get out of a jam.
 
 **Usages**:
 
