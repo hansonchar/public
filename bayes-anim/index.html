@@ -68,6 +68,7 @@
     <h1> animation of bayes posterior probability distribution </h1>
     <p> see the updates of the posterior distribution after each of 150 coinflips, using the outcomes for the prior. 
         Start by chosing a bias, then press start.</p>
+    <p> Source: <a href="https://github.com/joost2076/bayes-anim">https://github.com/joost2076/bayes-anim</a></p>
 
     <span>bias (between 0 and 1): </span><input style="width:40px;" type="text" id="bias" value=0.5>
     <input type="submit" value="start" onclick="myLoop(1)">
@@ -76,7 +77,7 @@
 
     <script type="text/javascript">
 
-    var bias = 0.15, numTrialsForUpdate = 1, n=0,k=0;
+    var bias = 0.15, numTrialsForUpdate = 1, n=0,H=0,T=0;
     var grid = d3.range(0,1.005,1/200);
     var f = []; //for memoization factorial function
     data = [];
@@ -144,14 +145,14 @@
             bias = document.getElementById('bias').value;
             svg_text.selectAll("text").remove();
             svg_path.selectAll("path.trial").remove();
-            n=0, k=0;
+            n=0, H=0, T=0;
             data = [];
             data.push({'trial': "num"+n, 'values': grid.map(function(d){return {'x': d, 'y': 1};})});
             tosses = [];
         }
         timeoutNr =setTimeout(function(){
             sim(numTrialsForUpdate);
-            data.push({'trial': "num"+n, 'info': "flips:" + n + " heads:" +k  ,'values': grid.map(function(d){return {'x': d, 'y': BETA(d)};})});
+            data.push({'trial': "num"+n, 'info': "flips:"+n + " heads:"+H + " tails:"+T, 'values': grid.map(function(d){return {'x': d, 'y': BETA(d)};})});
 
             var t = data[data.length-1].values.reduce(function(p,d){return d.y >p.y? d:p});
 
@@ -213,7 +214,7 @@
                 .attr("d", function(d){return line(d.values);  });
 
             //t = JSON.stringify(t,null,3);
-            info(n-1);
+            info(n);
 
             if (++i<151/numTrialsForUpdate) myLoop(i)
         },125)
@@ -235,7 +236,10 @@
         for (var i = 0; i < numTrials; i++) { 
             n +=1;
             coin = Math.random() < bias? "H" : "T"
-            k = coin ==="H"? k+1: k;
+            if (coin ==="H")
+                H += 1;
+            else
+                T += 1;
             tosses.push(coin);
         }
     }
@@ -252,8 +256,8 @@
 
     function BETA(theta){
         //calculate bayes posterior probs via Beta func.
-        var norm = factorial(k) * factorial(n-k) / factorial(n+1);
-        var ptimesl = Math.pow(theta,k) * Math.pow(1-theta, n-k); 
+        var norm = factorial(H) * factorial(n-H) / factorial(n+1);
+        var ptimesl = Math.pow(theta,H) * Math.pow(1-theta, n-H); 
         return ptimesl / norm;
     }
 
