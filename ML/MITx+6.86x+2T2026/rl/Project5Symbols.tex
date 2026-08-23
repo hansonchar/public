@@ -1,0 +1,131 @@
+% !TEX root = Project5Symbols.tex
+%
+% settings.json:
+%
+% "latex-workshop.latex.recipes": [
+% { // Uses LaTeX
+%     "name": "tex",
+%     "tools": [
+%         "lualatex"
+%     ]
+% },
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.6in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{xltabular}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\title{\vspace{-1cm}\textbf{Project 5 Notations \& Summary}\vspace{-0.5cm}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+
+\section*{Project 5 Notations}
+
+\begin{small}
+\renewcommand{\arraystretch}{1.25}
+\begin{xltabular}{\textwidth}{@{} c >{\hsize=0.8\hsize\raggedright\arraybackslash}X >{\hsize=0.8\hsize\raggedright\arraybackslash}X >{\hsize=1.4\hsize\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Notation} & \textbf{Meaning} & \textbf{Definition} & \textbf{Description} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+$H$ & Hidden states & & The set of all possible game states (not user observable.) \\
+$a$ & An action & & \\
+$a_t$ & Action chosen at time~$t$ & & \\
+$b$ & An object & & \\
+$b_t$ & Object chosen at time~$t$ & & \\
+$C$ & Commands & \{(a,b)\} & The set of all commands (action-object) pairs. \\
+$c$ & A command & $c=(a,b)$ & \\
+$P$ & Transition probabilities & $P: H \times C \times H \to [0,1]$ & $P(h' \mid h,a,b)$ is the probability of reaching state $h'$ by taking command $(a,b)$ in state $h.$ \\
+$R$ & Reward function & $R: H \times C \to \mathbb{R}$ & $R(h,a,b)$ is the reward of taking command $(a,b)$ in state $h.$ \\
+$\gamma$ & Discount factor & & \\
+$S$ & Observable states & \{s\} & The set of all possible text descriptions. \\
+$\Psi$ & Observation state generator & $\Psi: H \to S$ & A stochastic function used to produce text descriptions $s$ observable by the player. \\
+$r$ & Room index & & \\
+$q$ & Quest index & & Example of a quest: \textit{You are hungry now}. \\
+$\Gamma_0$ & Initial state distribution & & uniform over $H.$ \\
+$h$ & A hidden state & $h=(r,q) \in H$ & \\
+$h(s)$ & The uniquely associated hidden state of an observable state $s$ & $h: S \to H$ & Getting the hidden state from an observable state, $h(s)$, is deterministic, whereas getting an observable state from a hidden state, $\Psi(h)$, is stochastic. \\
+$h_t$ & Hidden state at time~$t$ & $h_t=(h_{r,t},h_{q,t})$ & $h_t \sim P(\cdot \mid h_{t-1}, a_{t-1}, b_{t-1})$ and $h_0 = (h_{r,0}, h_{q,0}) \sim \Gamma_0$ \\
+$h_{r,t}$ & The room index/component of a hidden state at time~$t$ & & \\
+$h_{q,t}$ & The quest index/component of a hidden state at time~$t$ & $h_{q,t} = h_{q,0}$ & The quest remains unchanged. \\
+$s_r$ & Room description & & Randomly provided. \\
+$s_q$ & Quest description & & \\
+$s$ & An observable state & $s = (s_r, s_q) \in S, h(s) \in H$ & Associated with a unique hidden state. \\
+$s_t$ & An observable state at time~$t$ & $s_t \sim \Psi(h_t)$ & \\
+$s_{q,t}$ & The quest component of an observable state at time~$t$ & $s_{q,t} = s_{q,0}$ & The quest remains unchanged. \\
+$K$ & Time at which player finishes the quest. & & \\
+$r_t$ & Reward at time~$t$ & $r_t = R(h_t, a_t, b_t)$ & $r_t = 0$ for $t > K.$ \\
+$V^*(s)$ & \textbf{Maximum expected total discounted reward} from a given observable \textbf{starting state} $s$ over all possible policies. & (see summary) & \\
+$V^*$ & The \textbf{weighted average} of $V^*(s)$ over all possible starting states. & (see summary) & Weighted average of all the \textbf{maximum expected total discounted reward} across all possible starting states. \\
+$Q^*(s,a,b)$ & Optimal Q-function & (see summary) & \textbf{Maximum expected total discounted reward} from a given observable starting state $s,$ taking the specific action $(a,b)$ at state $s,$ over all possible policies. \\
+$\pi$ & Policy & $\pi: S \to C$ & Determine the command given an observable state. \\
+$\pi^*(s)$ & Optimal policy/command at state $s$ & (see summary) & The specific command $(a,b)$ at state $s$ that would yield the \textbf{maximum expected total discounted reward} starting from state $s$, i.e., $Q^*(s,a,b)$ \\
+\end{xltabular}
+\end{small}
+
+\section*{Summary}
+
+\begin{itemize}[leftmargin=*, itemsep=0.5em]
+    \item Full record of interaction:
+    \[
+    (h_{0}, s_{0}, a_{0}, b_{0}, r_{0}, \dots, h_{t}, s_{t}, a_{t}, b_{t}, r_{t}, h_{t+1}, \dots)
+    \]
+
+    \item Observalbe record of interaction:
+    \[
+    (s_{0}, a_{0}, b_{0}, r_{0}, \dots, s_{t}, a_{t}, b_{t}, r_{t}, \dots)
+    \]
+
+    \item Total discounted reward:
+    \[
+    \sum_{t=0}^\infty \gamma^t r_t
+    \]
+
+    \item Expected cumulative discounted reward:
+    \[
+    \mathbb{E} \left[ \sum_{t=0}^{\infty} \gamma^{t} R(h_{t}, a_{t}, b_{t}) \;\middle|\; (a_{t}, b_{t}) \sim \pi \right]
+    \]
+
+    \item Maximum expected total discounted reward starting from a given observable state $s$ over all possible policies:
+    \[
+    V^*(s) = \max_{\pi} \mathbb{E} \left[ \sum_{t=0}^{\infty} \gamma^{t} R(h_{t}, a_{t}, b_{t}) \;\middle|\; h_{0} = h(s),\, s_{0} = s,\, (a_{t}, b_{t}) \sim \pi \right]
+    \]
+
+    \item The weighted average of $V^*(s)$ over all possible starting states:
+    \[
+    V^* = \mathbb{E}_{h_0 \sim \Gamma_{0},\, s \sim \Psi(h)} \left[ V^*(s) \right]
+    \]
+
+    \item Maximum expected total discounted reward from a given observable starting state $s$, taking the specific action $(a,b)$ at state $s$ at time $t=0$, over all possible policies.
+    \[
+    Q^*(s, a, b) = \max_{\pi} \mathbb{E} \left[ \sum_{t=0}^{\infty} \gamma^{t} R(h_{t}, a_{t}, b_{t}) \;\middle|\; h_{0} = h(s),\, s_{0} = s,\, a_{0} = a,\, b_{0} = b,\, (a_{t}, b_{t}) \sim \pi \text{ for } t \ge 1 \right]
+    \]
+
+    \item Optimal policy/command at state $s$
+    \[
+    \pi^*(s) = \arg\max_{(a,b) \in C} Q^*(s, a, b)
+    \]
+\end{itemize}
+
+\section*{Clarifying notes}
+
+\begin{itemize}[itemsep=0.3em]
+    \item $s_t$ is sampled from $h_t$ via $\Psi(h_t)$ at every time step. So even if $h_t = h_{t+1},$ $s_t$ may not equal $s_{t+1}.$
+    \item The reason of $(a_t,b_t) \sim \pi$ is because even though the policy function $\pi$ is deterministic given $s_t,$ the observable state $s_t$ itself is randomly generated from $h_t$ via the stochastic function $\Psi,$ and $h_t$ itself is randomly generated from the transition probability function $P$ if $t > 0$ or $\Gamma_0$ if $t=0.$
+    \item $\Gamma_0$ and $P$ are fixed, but they are not directly observable by the player.
+    \item $V^*$ is the weighted average of $V^*(s)$ over all possible starting states --- even though $\Gamma_0$ is uniform, $\Psi$ is not necessarily uniform.
+\end{itemize}
+
+\end{document}
