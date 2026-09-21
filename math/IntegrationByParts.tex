@@ -1,0 +1,110 @@
+% !TEX root = IntegrationByParts.tex
+%
+% settings.json:
+%
+% "latex-workshop.latex.recipes": [
+% { // Uses LaTeX
+%     "name": "tex",
+%     "tools": [
+%         "lualatex"
+%     ]
+% },
+
+\documentclass[10pt]{article}
+
+% ---------------------------------------------------------------
+% Page geometry
+% ---------------------------------------------------------------
+\usepackage[
+  a4paper,
+  top=0.82in,
+  bottom=0.82in,
+  left=0.95in,
+  right=0.95in
+]{geometry}
+
+% ---------------------------------------------------------------
+% Fonts and microtypography
+% ---------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---------------------------------------------------------------
+% Mathematics
+% ---------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+
+% ---------------------------------------------------------------
+% Spacing
+% ---------------------------------------------------------------
+\usepackage{setspace}
+\setstretch{1.04}
+
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+% Tighter display math spacing (\normalsize resets these at
+% \begin{document}, so patch it directly)
+\makeatletter
+\g@addto@macro\normalsize{%
+  \setlength\abovedisplayskip{5pt}
+  \setlength\belowdisplayskip{5pt}
+  \setlength\abovedisplayshortskip{3pt}
+  \setlength\belowdisplayshortskip{3pt}}
+\makeatother
+
+% ---------------------------------------------------------------
+% Page style (no header, footer, or page number)
+% ---------------------------------------------------------------
+\pagestyle{empty}
+
+% ---------------------------------------------------------------
+% Date formatting
+% ---------------------------------------------------------------
+\renewcommand{\today}{%
+  \number\day\space
+  \ifcase\month\or
+  January\or February\or March\or April\or May\or June\or July\or August\or September\or October\or November\or December
+  \fi
+  \space\number\year
+}
+
+% ---------------------------------------------------------------
+\begin{document}
+
+% ---------------------------------------------------------------
+% Title block
+% ---------------------------------------------------------------
+\begin{center}
+  {\large\textsc{A quick note on integration by parts}}\\[4pt]
+  By \textsc{Hanson Char}\\
+  {\small\textit{Revised \today}}
+\end{center}
+
+Recall the integration by parts formula:
+\[
+\int u \dd v = uv - \int v \dd u.
+\]
+
+Neat, but the use of this formula requires mapping \(u\) and \(v\) to the specific integrand. This can be cumbersome, especially when the integrand is a product of three or more functions. Now, consider a seemingly more complicated but equivalent formulation:
+\[
+\int xy \dd z = x \int y \dd z - \int \left( \int y \dd z \right) \dd x,
+\]
+which turns out to be easier to apply in practice. Why? Because it reduces the amount of mental book-keeping: the right-hand side can be written directly from the left-hand side. Specifically, given the pattern
+\[
+\int x \, (\text{something}) \dd z,
+\]
+we can rewrite it immediately as
+\[
+x \int (\text{something}) \dd z - \int \left( \int (\text{something}) \dd z \right) \dd x.
+\]
+
+Happy integrating by parts!
+
+\begin{center}
+---
+\end{center}
+
+\end{document}
